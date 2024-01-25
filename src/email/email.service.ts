@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-
 import * as nodemailer from 'nodemailer'
+import { SendEmailDto } from './dto/send-email.dto';
 
 @Injectable()
 export class EmailService {
@@ -16,15 +16,28 @@ export class EmailService {
       },
     });}
 
-    async sendMail(to: string, subject: string, text: string): Promise<void> {
-      const mailOptions: nodemailer.SendMailOptions = {
-        from: '"Pruebas"',
-        to,
-        subject,
-        text,
-      };
-  
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log('Message sent: %s', info.messageId);
+    async sendMail(userData:SendEmailDto, code:string): Promise<void> { 
+         const mailOptions: nodemailer.SendMailOptions = {
+           from: '"Pruebas"',
+           to: userData.to,
+           subject: 'Prueba',
+           text: "Tu codigo para restablecer tu contraseña es "+code,
+         };
+
+         const info = await this.transporter.sendMail(mailOptions);
+         console.log('Message sent: %s', info.messageId); 
+    }
+
+    generateCode():string{
+        const caracteres = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let codigo = '';
+
+        for (let i = 0; i < 10; i++) {
+          const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+          codigo += caracteres.charAt(indiceAleatorio);
+        }
+
+        return codigo;
     }
 }
+
