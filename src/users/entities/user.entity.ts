@@ -36,9 +36,6 @@ export class User {
     @Column()
     cellphone:number;
 
-    @Column({unique:true})
-    username:string;
-
     @Column()
     password:string;
 

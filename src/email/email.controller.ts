@@ -12,7 +12,7 @@ export class EmailController {
 
     const resp = this.userService.getUser(dataUser.to);
 
-       if((await resp).username === dataUser.username && (await resp).email === dataUser.to){
+       if((await resp).email === dataUser.to){
         const code = this.emailService.generateCode()
         await this.emailService.sendMail(dataUser,code);
         return{

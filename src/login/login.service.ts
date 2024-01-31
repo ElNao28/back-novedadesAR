@@ -1,6 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ValidLoginDto } from './dto/valid-login.dto';
-import { UpdateLoginDto } from './dto/update-login.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcryptjs from 'bcryptjs';
 
@@ -18,20 +17,4 @@ export class LoginService {
       else
         return false; 
   }
-
-  findAll() {
-    return `This action returns all login`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} login`;
-  }
-
-  update(id: number, updateLoginDto: UpdateLoginDto) {
-    return `This action updates a #${id} login`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} login`;
-  }
-}
+} 
