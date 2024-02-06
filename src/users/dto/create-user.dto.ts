@@ -5,9 +5,10 @@ export class CreateUserDto {
     motherLastname:string;
     gender:string;
     birthdate?:Date | null;
-    city:string;
-    address:string;
+    estado:string;
+    municipio:string;
     cp:number;
+    colonia:string;
     email:string;
     cellphone:number;
     password:string;

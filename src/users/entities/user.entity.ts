@@ -22,13 +22,16 @@ export class User {
     birthdate: Date | null;
 
     @Column()
-    city:string;
+    estado:string;
 
     @Column()
-    address:string;
+    municipio:string;
 
     @Column()
     cp:number;
+
+    @Column()
+    colonia:string;
 
     @Column({unique:true})
     email:string;

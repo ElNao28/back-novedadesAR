@@ -20,10 +20,11 @@ export class UsersService {
   
     if (!foundUser) {
 
-      const{password, ...userDt} = userData;
-
+      const{password,answer, ...userDt} = userData;
+      answer.toLowerCase();
       const newUser = this.userRepository.create({
-        password: bcryptjs.hashSync(password, 10),
+        password: bcryptjs.hashSync(password,10),
+        answer: bcryptjs.hashSync(answer.toLowerCase(),10),
         ...userDt
       });
       return this.userRepository.save(newUser);
@@ -48,7 +49,11 @@ export class UsersService {
   }
 
   updateUser(id: number, updateData: UpdateUserDto) {
-    const userUpdate = this.userRepository.update(id, updateData)
+    const {password, ...data} = updateData;
+    const userUpdate = this.userRepository.update(id, {
+      password: password? bcryptjs.hashSync(password, 10) : null,
+      ...data
+    })
     return userUpdate;
   }
 
