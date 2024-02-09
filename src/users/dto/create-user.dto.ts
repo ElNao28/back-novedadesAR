@@ -10,7 +10,7 @@ export class CreateUserDto {
     cp:number;
     colonia:string;
     email:string;
-    cellphone:number;
+    cellphone:string;
     password:string;
     question:string;
     answer:string;

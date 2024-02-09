@@ -36,8 +36,8 @@ export class User {
     @Column({unique:true})
     email:string;
 
-    @Column()
-    cellphone:number;
+    @Column({unique:true, length:10})
+    cellphone:string;
 
     @Column()
     password:string;
