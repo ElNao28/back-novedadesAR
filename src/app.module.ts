@@ -10,11 +10,11 @@ import { LoginModule } from './login/login.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'id20427581_novedadesar',
-      password: 'Awadekoko@123',
-      database: 'id20427581_novedadesar',
+      host: 'roundhouse.proxy.rlwy.net',
+      port: 23516,
+      username: 'root',
+      password: '3CfeBhE43BA4CghG1G5HgDhh62D5GHdF',
+      database: 'railway',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
