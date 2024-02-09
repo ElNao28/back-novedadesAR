@@ -14,5 +14,6 @@ export class CreateUserDto {
     password:string;
     question:string;
     answer:string;
+    intentos:number;
     
 }

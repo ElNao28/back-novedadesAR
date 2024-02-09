@@ -47,4 +47,7 @@ export class User {
 
     @Column()
     answer:string;
+
+    @Column()
+    intentos:number;
 }
