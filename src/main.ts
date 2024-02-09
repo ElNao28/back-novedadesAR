@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const CorsOptions: CorsOptions = {
-    origin: 'http://localhost:4200',  // Reemplaza con tu dominio de Angular
+    origin: 'https://novedades-ar.netlify.app',  // Reemplaza con tu dominio de Angular
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: false,
   }
