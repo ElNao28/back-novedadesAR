@@ -12,8 +12,6 @@ export class CreateUserDto {
     email:string;
     cellphone:string;
     password:string;
-    question:string;
-    answer:string;
     intentos:number;
     
 }

@@ -20,11 +20,9 @@ export class UsersService {
   
     if (!foundUser) {
 
-      const{password,answer, ...userDt} = userData;
-      answer.toLowerCase();
+      const{password, ...userDt} = userData;
       const newUser = this.userRepository.create({
         password: bcryptjs.hashSync(password,10),
-        answer: bcryptjs.hashSync(answer.toLowerCase(),10),
         ...userDt
       });
       return this.userRepository.save(newUser);
@@ -48,9 +46,11 @@ export class UsersService {
       return user;
   }
 
-  updateUser(id: number, updateData: UpdateUserDto) {
+  async updateUser(email: string, updateData: UpdateUserDto) {
+    const dataUser = this.getUser(email);
+
     const {password, ...data} = updateData;
-    const userUpdate = this.userRepository.update(id, {
+    const userUpdate = this.userRepository.update((await dataUser).id, {
       password: password? bcryptjs.hashSync(password, 10) : null,
       ...data
     })

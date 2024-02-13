@@ -43,11 +43,5 @@ export class User {
     password:string;
 
     @Column()
-    question:string;
-
-    @Column()
-    answer:string;
-
-    @Column()
     intentos:number;
 }

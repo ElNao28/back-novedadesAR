@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { EmailModule } from './email/email.module';
 import { LoginModule } from './login/login.module';
-import { ValidQuestionModule } from './valid-question/valid-question.module';
 import { RecoverPasswordModule } from './recover-password/recover-password.module';
+import { CheckEmailModule } from './check-email/check-email.module';
 
 @Module({
   imports: [
@@ -23,8 +23,8 @@ import { RecoverPasswordModule } from './recover-password/recover-password.modul
     UsersModule,
     EmailModule,
     LoginModule,
-    ValidQuestionModule,
     RecoverPasswordModule,
+    CheckEmailModule,
     
   ],
   controllers: [AppController],
