@@ -12,13 +12,18 @@ export class UsersService {
   constructor(@InjectRepository(User) private userRepository:Repository<User>){}  
 
   async createUser(userData: CreateUserDto) {
-    const foundUser = await this.userRepository.findOne({
+    const foundEmail = await this.userRepository.findOne({
       where: {
         email: userData.email
       }
     });
+    const foundCellphone = await this.userRepository.findOne({
+      where: {
+        cellphone: userData.cellphone
+      }
+    });
   
-    if (!foundUser) {
+    if (!foundEmail && !foundCellphone) {
 
       const{password, ...userDt} = userData;
       const newUser = this.userRepository.create({
