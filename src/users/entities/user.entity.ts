@@ -43,5 +43,5 @@ export class User {
     password:string;
 
     @Column()
-    intentos:number;
+    intentos?:number;
 }
