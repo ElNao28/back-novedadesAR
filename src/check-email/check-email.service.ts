@@ -8,13 +8,15 @@ export class CheckEmailService {
 
   async checkData(data: CreateCheckEmailDto) {
     let datoUser = await(this.userService.getUser(data.email))
-    
-    if(!datoUser) return {
-      mensaje:"No existe el usuario",
+    console.log("datos: ", datoUser)
+    if(datoUser === null){ 
+      console.log("error")
+      return {
+      mensaje:"No existe el usuario a",
       status:HttpStatus.NOT_FOUND
-    }
+    }}
     return {
-      mensaje:"Usuario encontrado",
+      mensaje:"Usuario encontrado 2",
       status:HttpStatus.ACCEPTED,
     }
   }

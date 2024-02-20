@@ -12,11 +12,11 @@ import { CheckEmailModule } from './check-email/check-email.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'roundhouse.proxy.rlwy.net',//roundhouse.proxy.rlwy.net localhost
-      port: 23516,//23516 3306
+      host: 'localhost',//roundhouse.proxy.rlwy.net localhost
+      port: 3306,//23516 3306
       username: 'root',
-      password: '3CfeBhE43BA4CghG1G5HgDhh62D5GHdF',//3CfeBhE43BA4CghG1G5HgDhh62D5GHdF
-      database: 'railway',//railway db_novedadesar
+      password: '',//3CfeBhE43BA4CghG1G5HgDhh62D5GHdF
+      database: 'db_novedadesar',//railway db_novedadesar
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, 
     }),
