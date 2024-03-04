@@ -38,7 +38,9 @@ export class UsersService {
   
 
   getUsers() {
-    const users = this.userRepository.find();
+    const users = this.userRepository.find({
+      relations: ['compras','carrito']
+    });
     return users;
   }
 
@@ -46,6 +48,16 @@ export class UsersService {
     const user = this.userRepository.findOne({
       where: {
         email: email
+      },
+      relations:['compras','carrito']
+    });
+      return user;
+  }
+
+  getUserById(id: number) {
+    const user = this.userRepository.findOne({
+      where: {
+        id: id
       }
     });
       return user;

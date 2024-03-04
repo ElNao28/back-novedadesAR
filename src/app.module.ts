@@ -7,6 +7,9 @@ import { EmailModule } from './email/email.module';
 import { LoginModule } from './login/login.module';
 import { RecoverPasswordModule } from './recover-password/recover-password.module';
 import { CheckEmailModule } from './check-email/check-email.module';
+import { ComprasModule } from './compras/compras.module';
+import { ProductsModule } from './products/products.module';
+import { CarritoModule } from './carrito/carrito.module';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { CheckEmailModule } from './check-email/check-email.module';
     LoginModule,
     RecoverPasswordModule,
     CheckEmailModule,
+    ComprasModule,
+    ProductsModule,
+    CarritoModule,
     
   ],
   controllers: [AppController],

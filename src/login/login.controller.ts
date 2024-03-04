@@ -43,13 +43,13 @@ export class LoginController {
           else
           {
             const data = this.loginService.validLogin(createLoginDto);
-            if((await data) === true)
+            if((await data).valid === true)
             {
               this.loginService.resetearIntentos(datos.id)
               return {
                     message: 'Login correcto',
                     status: 200,
-
+                    token: (await data).token
                   } 
             }
             else

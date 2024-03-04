@@ -1,4 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Carrito } from "src/carrito/entities/carrito.entity";
+import { Compra } from "src/compras/entities/compra.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+
 
 @Entity({name: 'users'})
 export class User {
@@ -24,7 +27,7 @@ export class User {
     @Column()
     estado:string;
 
-    @Column()
+    @Column() 
     municipio:string;
 
     @Column()
@@ -44,4 +47,10 @@ export class User {
 
     @Column({nullable:true})
     intentos?:number | null;
-}
+
+    @OneToMany(()=>Compra, compra => compra.usuario)
+    compras: Compra[];
+
+    @OneToMany(()=>Carrito, carrito => carrito.usuario)
+    carrito: Carrito[];
+} 
