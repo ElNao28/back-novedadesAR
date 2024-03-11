@@ -4,7 +4,7 @@ export class CreateProductDto {
     descripccion: string;
     stock: number;
     categoria: string;
-    imagen?: string;
+    imagen: string;
     rating: number;
     descuento: number;
 }
