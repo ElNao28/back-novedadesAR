@@ -17,7 +17,7 @@ export class Product {
     @Column()
     imagen: string;
     @Column()
-    rating: number;
+    rating?: number | null;
     @Column()
     descuento: number;
 }
