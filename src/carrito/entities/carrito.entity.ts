@@ -9,7 +9,7 @@ export class Carrito {
     nombre_producto:string;
     @Column()
     precio:number;
-    @Column()
+    @Column() 
     cantidad:number;
     @Column()
     img:string;

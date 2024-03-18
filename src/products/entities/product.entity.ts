@@ -20,4 +20,6 @@ export class Product {
     rating?: number | null;
     @Column()
     descuento: number;
+    @Column({default:'activo'})
+    status:string
 }

@@ -60,7 +60,10 @@ export class LoginController {
           }
       }
     } catch (error) {
-      throw new HttpException("El correo no existe", HttpStatus.FOUND);
+      return {
+        message: 'Correo incorrecto',
+        status: 400
+      }
     }
   }
 }

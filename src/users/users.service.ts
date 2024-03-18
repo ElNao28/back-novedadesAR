@@ -22,18 +22,26 @@ export class UsersService {
         cellphone: userData.cellphone
       }
     });
-  
-    if (!foundEmail && !foundCellphone) {
-
-      const{password, ...userDt} = userData;
-      const newUser = this.userRepository.create({
-        password: bcryptjs.hashSync(password,10),
-        ...userDt
-      });
-      return this.userRepository.save(newUser);
+    
+    if(foundEmail)return {
+      message:'El usuario ya existe',
+      status:HttpStatus.CONFLICT,
     }
-  
-    throw new HttpException('El usuario ya existe', HttpStatus.CONFLICT);
+    if(foundCellphone)return {
+      message:'El usuario ya existe',
+      status:HttpStatus.CONFLICT,
+    }
+
+    const{password, ...userDt} = userData;
+    const newUser = this.userRepository.create({
+      password: bcryptjs.hashSync(password,10),
+      ...userDt
+    });
+    this.userRepository.save(newUser);
+    return {
+      message: 'Usuario creado correctamente',
+      status:HttpStatus.ACCEPTED,
+    };
   }
   
 
@@ -67,11 +75,14 @@ export class UsersService {
     const dataUser = this.getUser(email);
 
     const {password, ...data} = updateData;
-    const userUpdate = this.userRepository.update((await dataUser).id, {
+    this.userRepository.update((await dataUser).id, {
       password: password? bcryptjs.hashSync(password, 10) : null,
       ...data
     })
-    return userUpdate;
+    return {
+      message: 'Usuario creado correctamente',
+      status:HttpStatus.ACCEPTED,
+    };
   }
 
   DeleteUser(id: number) {

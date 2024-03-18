@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { CarritoService } from './carrito.service';
 import { CreateCarritoDto } from './dto/create-carrito.dto';
 import { UpdateCarritoDto } from './dto/update-carrito.dto';
+import { CheckCarritoDto } from './dto/check-carrito.dto';
 
 @Controller('carrito')
 export class CarritoController {
@@ -21,7 +22,10 @@ export class CarritoController {
   getProductsCardByiD(@Param('id') id: string) {
     return this.carritoService.getProductsCardByiD(+id);
   }
-
+  @Post('byid')
+  getProductCardByiDs(@Body() checkCarritoDto: CheckCarritoDto) {
+    return this.carritoService.getProductById(checkCarritoDto);
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCarritoDto: UpdateCarritoDto) {
     return this.carritoService.update(+id, updateCarritoDto);

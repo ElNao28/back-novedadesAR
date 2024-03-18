@@ -21,7 +21,7 @@ export class EmailController {
           const code = this.emailService.generateCode()
           await this.emailService.sendMail(dataUser,code);
           return{
-            status:HttpStatus.OK,
+            status:HttpStatus.OK, 
             message:"Email enviado correctamente",
             codigo: code,
           }
