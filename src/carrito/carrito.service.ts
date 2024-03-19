@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Carrito } from './entities/carrito.entity';
 import { Repository } from 'typeorm';
 import { CheckCarritoDto } from './dto/check-carrito.dto';
-
 @Injectable()
 export class CarritoService {
   constructor(@InjectRepository(Carrito) private carritoRepository:Repository<Carrito>) {}
@@ -23,23 +22,24 @@ export class CarritoService {
   }
 
   getProductsCardByiD(id: number) {
-    return this.carritoRepository.find({
+     return this.carritoRepository.findOne({
       where:{
-        usuarioId:id
-      }
-    });
+        id
+      },
+      relations:['detallesCarrito','detallesCarrito.product']
+     });
   }
 
   getProductById(checkCarritoDto:CheckCarritoDto){
-    const productIsFound =  this.carritoRepository.findOne({
-      where:{
-        id:checkCarritoDto.idProducto,
-        usuarioId:checkCarritoDto.idUsurario
-      }
-    })
-    if(productIsFound){
-      return true
-    }
+    // const productIsFound =  this.carritoRepository.findOne({
+    //   where:{
+    //     id:checkCarritoDto.idProducto,
+    //     usuarioId:checkCarritoDto.idUsurario
+    //   }
+    // })
+    // if(productIsFound){
+    //   return true
+    // }
   }
   update(id: number, updateCarritoDto: UpdateCarritoDto) {
     return `This action updates a #${id} carrito`;
@@ -48,4 +48,5 @@ export class CarritoService {
   remove(id: number) {
     return `This action removes a #${id} carrito`;
   }
+
 }

@@ -1,5 +1,6 @@
+import { Product } from "src/products/entities/product.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity('compras')
@@ -28,6 +29,9 @@ export class Compra{
     @Column()
     usuarioId:number;
 
-    @ManyToOne(() => User, user => user.compras)
-    usuario:User
+    // @ManyToOne(() => User, user => user.compras)
+    // usuario:User
+
+    // @OneToMany(()=> Product, product => product.compras)
+    // productos: Product[];
 }  

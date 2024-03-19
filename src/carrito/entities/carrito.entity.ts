@@ -1,22 +1,12 @@
-import { User } from "src/users/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { DetallesCarrito } from "./detallesCarrito.entity";
 @Entity('carrito')
 export class Carrito {
     @PrimaryGeneratedColumn()
     id:number;
     @Column()
-    nombre_producto:string;
-    @Column()
-    precio:number;
-    @Column() 
-    cantidad:number;
-    @Column()
-    img:string;
+    cantidad:number;    
 
-    @Column()
-    usuarioId:number;
-    @ManyToOne(() => User, user => user.carrito)
-    usuario:string;
+    @OneToMany(()=>DetallesCarrito, detallesCarrito => detallesCarrito.carrito)
+    detallesCarrito:DetallesCarrito[]
 }
- 

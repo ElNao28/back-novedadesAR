@@ -47,7 +47,7 @@ export class UsersService {
 
   getUsers() {
     const users = this.userRepository.find({
-      relations: ['compras','carrito']
+      relations: ['carrito']
     });
     return users;
   }
@@ -57,7 +57,7 @@ export class UsersService {
       where: {
         email: email
       },
-      relations:['compras','carrito']
+      relations:['carrito']
     });
       return user;
   }

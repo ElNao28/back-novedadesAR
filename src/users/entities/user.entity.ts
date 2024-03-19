@@ -1,6 +1,6 @@
 import { Carrito } from "src/carrito/entities/carrito.entity";
 import { Compra } from "src/compras/entities/compra.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn,OneToOne,JoinColumn } from "typeorm";
 
 
 @Entity({name: 'users'})
@@ -35,9 +35,7 @@ export class User {
     @Column({nullable:true})
     intentos?:number | null;
 
-    @OneToMany(()=>Compra, compra => compra.usuario)
-    compras: Compra[];
-
-    @OneToMany(()=>Carrito, carrito => carrito.usuario)
-    carrito: Carrito[];
-} 
+    @OneToOne(()=>Carrito, carrito => carrito.id)
+    @JoinColumn()
+    carrito:Carrito; 
+}

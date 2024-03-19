@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Compra } from "src/compras/entities/compra.entity";
+import { Column, Entity,OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { DetallesCarrito } from 'src/carrito/entities/detallesCarrito.entity'
 
 @Entity('products')
 export class Product {
@@ -21,5 +23,8 @@ export class Product {
     @Column()
     descuento: number;
     @Column({default:'activo'})
-    status:string
+    status:string;
+
+    @OneToMany(()=>DetallesCarrito, detalleCarrito => detalleCarrito.product)
+    dellatesCarrito:DetallesCarrito
 }
