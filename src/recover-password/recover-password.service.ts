@@ -18,4 +18,16 @@ export class RecoverPasswordService {
       status:HttpStatus.ACCEPTED,
     }
   }
+
+  async checkQuestion(email:string){
+   let datoUser = await(this.userService.getUser(email))
+   if(!datoUser) return {
+      response:"No existe el usuario",
+      status:HttpStatus.NOT_FOUND
+   }
+   return {
+    response: datoUser.question,
+    status:HttpStatus.OK
+   }
+  }
 }

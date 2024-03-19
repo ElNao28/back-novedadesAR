@@ -13,5 +13,7 @@ export class CreateUserDto {
     cellphone:string;
     password:string;
     intentos:number;
+    question:string;
+    answer:string;
     
 }

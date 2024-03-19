@@ -34,6 +34,10 @@ export class User {
     password:string;
     @Column({nullable:true})
     intentos?:number | null;
+    @Column()
+    question:string;
+    @Column()
+    answer:string;
 
     @OneToOne(()=>Carrito, carrito => carrito.id)
     @JoinColumn()

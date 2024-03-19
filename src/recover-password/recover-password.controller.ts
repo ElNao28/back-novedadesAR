@@ -10,4 +10,9 @@ export class RecoverPasswordController {
   validData(@Body() createRecoverPasswordDto: CreateRecoverPasswordDto) {
     return this.recoverPasswordService.checkData(createRecoverPasswordDto);
   }
+
+  @Get(':email')
+  checkQuestionByEmail(@Param('email') email: string){
+    return this.recoverPasswordService.checkQuestion(email);
+  }
 }
