@@ -1,6 +1,7 @@
-import { Compra } from "src/compras/entities/compra.entity";
-import { Column, Entity,OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity,ManyToOne,OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { DetallesCarrito } from 'src/carrito/entities/detallesCarrito.entity'
+import { DetallesVenta } from "src/ventas/entities/detalles_venta.entity";
+import { Imagenes } from "./imagenes.entity";
 
 @Entity('products')
 export class Product {
@@ -17,7 +18,7 @@ export class Product {
     @Column()
     categoria: string;
     @Column()
-    imagen: string;
+    imagenn: string;
     @Column()
     rating?: number | null;
     @Column()
@@ -26,5 +27,11 @@ export class Product {
     status:string;
 
     @OneToMany(()=>DetallesCarrito, detalleCarrito => detalleCarrito.product)
-    dellatesCarrito:DetallesCarrito
+    dellatesCarrito:DetallesCarrito;
+
+    @OneToMany(()=>DetallesVenta, detallesVenta => detallesVenta.producto)
+    detalleVenta:DetallesVenta;
+
+    @OneToMany(()=>Imagenes, imagenes => imagenes)
+    imagen:Imagenes[]
 }

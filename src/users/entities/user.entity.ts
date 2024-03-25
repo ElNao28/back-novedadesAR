@@ -1,7 +1,11 @@
 import { Carrito } from "src/carrito/entities/carrito.entity";
-import { Compra } from "src/compras/entities/compra.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn,OneToOne,JoinColumn } from "typeorm";
-
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn,OneToOne,JoinColumn, ManyToOne } from "typeorm";
+import { Intentos } from "./intentos.entity";
+import { Logs } from "./logs.entity";
+import { Question } from "./question.entity";
+import { Ubicacion } from "./ubicacion.entity";
+import { Rol } from "./rol.entity";
+import { Venta } from "src/ventas/entities/venta.entity"
 
 @Entity({name: 'users'})
 export class User {
@@ -18,28 +22,36 @@ export class User {
     gender:string;
     @Column({ type: "date", nullable: true })
     birthdate: Date | null;
-    @Column()
-    estado:string;
-    @Column() 
-    municipio:string;
-    @Column()
-    cp:number;
-    @Column()
-    colonia:string;
     @Column({unique:true})
     email:string;
     @Column({unique:true, length:10})
     cellphone:string;
     @Column()
     password:string;
-    @Column({nullable:true})
-    intentos?:number | null;
-    @Column()
-    question:string;
     @Column()
     answer:string;
 
-    @OneToOne(()=>Carrito, carrito => carrito.id)
+
+    @ManyToOne(()=>Question, question => question.users)
+    question:Question;
+
+    @ManyToOne(()=>Rol, rol => rol.usuario)
+    rol:Rol;
+
+    @OneToOne(()=>Intentos)
     @JoinColumn()
-    carrito:Carrito; 
+    intentos:Intentos;
+
+    @OneToOne(()=>Ubicacion)
+    @JoinColumn()
+    ubicacion:Ubicacion;
+
+    @OneToMany(()=>Logs, logs =>logs.usuario)
+    logs:Logs[];
+
+    @OneToMany(()=>Carrito, carrito =>carrito.usuario)
+    carrito:Carrito[];
+
+    @OneToMany(()=>Venta, venta =>venta.usuario)
+    ventas:Venta[];
 }

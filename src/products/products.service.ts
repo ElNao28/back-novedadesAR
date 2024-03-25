@@ -28,7 +28,7 @@ export class ProductsService {
 
     try {
 
-      const { imagen, ...data } = createProductDto
+      const { imagenn, ...data } = createProductDto
 
       // Crea un archivo temporal con el buffer del archivo
       const filePath = path.join(os.tmpdir(), file.originalname);
@@ -45,7 +45,7 @@ export class ProductsService {
 
       console.log(result);
       const newProduct = this.producRepository.create({
-        imagen: result.secure_url,
+        imagenn: result.secure_url,
         ...data
       });
 

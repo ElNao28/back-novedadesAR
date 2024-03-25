@@ -15,6 +15,6 @@ export class DetallesCarrito{
     carrito:Carrito
 
     @ManyToOne(()=>Product, product => product.dellatesCarrito)
-    product:Product
-
+    product:Product;
+    
 }

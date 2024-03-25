@@ -8,31 +8,4 @@ import { CheckCarritoDto } from './dto/check-carrito.dto';
 export class CarritoController {
   constructor(private readonly carritoService: CarritoService) {}
 
-  @Post()
-  create(@Body() createCarritoDto: CreateCarritoDto) {
-    return this.carritoService.create(createCarritoDto);
-  }
- 
-  @Get()
-  findAll() {
-    return this.carritoService.findAll();
-  }
-
-  @Get(':id')
-  getProductsCardByiD(@Param('id') id: string) {
-    return this.carritoService.getProductsCardByiD(+id);
-  }
-  @Post('byid')
-  getProductCardByiDs(@Body() checkCarritoDto: CheckCarritoDto) {
-    return this.carritoService.getProductById(checkCarritoDto);
-  }
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarritoDto: UpdateCarritoDto) {
-    return this.carritoService.update(+id, updateCarritoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.carritoService.remove(+id);
-  }
 }
