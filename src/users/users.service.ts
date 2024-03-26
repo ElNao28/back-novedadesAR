@@ -153,6 +153,21 @@ export class UsersService {
     this.ubicacionRepository.update(foundUser.ubicacion.id,dataUbic)
   }
 
+  async getIntentos(idUser:number){
+    const dataUser = await this.userRepository.findOne({
+      where:{
+        id:idUser
+      },
+      relations:['intentos']
+    })
+    const intentosUser = await this.intentosRepository.findOne({
+      where:{
+        id:dataUser.intentos.id,
+      }
+    })
+    return intentosUser.intentos;
+  }
+  
   DeleteUser(id: number) {
     const deleteUser = this.userRepository.delete({ id: id })
     return deleteUser;

@@ -6,12 +6,14 @@ import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { Intentos } from 'src/users/entities/intentos.entity';
 
 @Injectable()
 export class LoginService {
 
   constructor(
       @InjectRepository(User) private userRepository:Repository<User>,
+      @InjectRepository(Intentos) private intentosRepository:Repository<Intentos>,
       private userService:UsersService,
       private jwtService: JwtService
     ){}
@@ -36,10 +38,19 @@ export class LoginService {
         }
   }
 
-  asignarIntentos(id:number, intento:number){
-    this.userRepository.query(
-      "UPDATE users SET intentos = "+intento+" WHERE id = "+id+""
-    )
+  async asignarIntentos(id:number, intento:number){
+    const dataUser = await this.userRepository.findOne({
+      where:{
+        id:id
+      },
+      relations:['intentos']
+    });
+    this.intentosRepository.update(dataUser.intentos.id,{
+      intentos: intento
+    })
+    // this.userRepository.query(
+    //   "UPDATE users SET intentos = "+intento+" WHERE id = "+id+""
+    // )
   }
 
   resetearIntentos(id:number){
@@ -51,4 +62,4 @@ export class LoginService {
       console.log("Intentos reseteados")
     },10000)
   }
-} 
+}

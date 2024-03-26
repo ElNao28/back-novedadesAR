@@ -10,60 +10,60 @@ export class LoginController {
 
   intento:number = 0;
 
-  //@Post()
-  // async validLogin(@Body() createLoginDto: ValidLoginDto) {
-    
+  @Post()
+   async validLogin(@Body() createLoginDto: ValidLoginDto) {
 
-  //   try 
-  //   {
-  //     const datos = await this.userService.getUser(createLoginDto.email)
-  //     if(datos === null) throw new error("error")
+     try 
+     {
+       const datos = await this.userService.getUser(createLoginDto.email)
+       if(datos === null) throw new error("error")
 
-  //     this.intento = datos.intentoss;
-  //     if(this.intento === 8){  
-  //       return {
-  //       message: 'Numero de maxinmo de intentos alcanzado',
-  //       status: HttpStatus.CONFLICT,
-  //       nIntentos: this.intento
-  //     }}
-  //     else
-  //     {
-  //       this.intento++;
-  //       this.loginService.asignarIntentos(datos.id,this.intento)
-  //         if(this.intento >= 8)
-  //         {
-  //           console.log("la de abajo")
-  //           this.loginService.resetearIntentos(datos.id)
-  //           return {
-  //                 message: 'Numero de maxinmo de intentos alcanzado',
-  //                 status: HttpStatus.CONFLICT,
-  //                 nIntentos: this.intento
-  //               }
-  //         }
-  //         else
-  //         {
-  //           const data = this.loginService.validLogin(createLoginDto);
-  //           if((await data).valid === true)
-  //           {
-  //             this.loginService.resetearIntentos(datos.id)
-  //             return {
-  //                   message: 'Login correcto',
-  //                   status: 200,
-  //                   token: (await data).token
-  //                 } 
-  //           }
-  //           else
-  //           return {
-  //                 message: 'Login incorrecto',
-  //                 status: 400
-  //               }
-  //         }
-  //     }
-  //   } catch (error) {
-  //     return {
-  //       message: 'Correo incorrecto',
-  //       status: 400
-  //     }
-  //   }
-  // }
+       this.intento = await this.userService.getIntentos(datos.id);
+       console.log(this.intento);
+       if(this.intento === 8){  
+         return {
+         message: 'Numero de maxinmo de intentos alcanzado',
+         status: HttpStatus.CONFLICT,
+         nIntentos: this.intento
+       }}
+       else
+       {
+         this.intento++;
+         this.loginService.asignarIntentos(datos.id,this.intento)
+           if(this.intento >= 8)
+           {
+             console.log("la de abajo")
+             //this.loginService.resetearIntentos(datos.id)
+             return {
+                   message: 'Numero de maxinmo de intentos alcanzado',
+                   status: HttpStatus.CONFLICT,
+                   nIntentos: this.intento
+                 }
+           }
+           else
+           {
+             const data = this.loginService.validLogin(createLoginDto);
+             if((await data).valid === true)
+             {
+               //this.loginService.resetearIntentos(datos.id)
+               return {
+                     message: 'Login correcto',
+                     status: 200,
+                     token: (await data).token
+                   } 
+             }
+             else
+             return {
+                   message: 'Login incorrecto',
+                   status: 400
+                 }
+           }
+       }
+     } catch (error) {
+       return {
+         message: 'Correo incorrecto',
+         status: 400
+       }
+     }
+   }
 }
