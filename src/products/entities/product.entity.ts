@@ -18,8 +18,6 @@ export class Product {
     @Column()
     categoria: string;
     @Column()
-    imagenn: string;
-    @Column()
     rating?: number | null;
     @Column()
     descuento: number;

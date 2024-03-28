@@ -9,8 +9,14 @@ export class DetallesCarrito{
     id: number;
     
     @Column()
-    cantidad:number
+    cantidad:number;
 
+    @Column()
+    precio:number;
+
+    @Column()
+    sub_total:number;
+    
     @ManyToOne(()=> Carrito, carrito => carrito.detallesCarrito)
     carrito:Carrito
 

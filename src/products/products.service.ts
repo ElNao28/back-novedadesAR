@@ -22,40 +22,40 @@ cloudinary.v2.config({
 export class ProductsService {
   constructor(@InjectRepository(Product) private producRepository: Repository<Product>) { }
 
-  async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
+  // async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
 
-    console.log(file);
+  //   console.log(file);
 
-    try {
+  //   try {
 
-      const { imagenn, ...data } = createProductDto
+  //     const {  ...data } = createProductDto
 
-      // Crea un archivo temporal con el buffer del archivo
-      const filePath = path.join(os.tmpdir(), file.originalname);
-      fs.writeFileSync(filePath, file.buffer);
+  //     // Crea un archivo temporal con el buffer del archivo
+  //     const filePath = path.join(os.tmpdir(), file.originalname);
+  //     fs.writeFileSync(filePath, file.buffer);
 
-      // se sube la imagen a Cloudinary
-      const result = await cloudinary.v2.uploader.upload(filePath, {
-        folder: 'tu-carpeta',
-        resource_type: 'image'
-      });
+  //     // se sube la imagen a Cloudinary
+  //     const result = await cloudinary.v2.uploader.upload(filePath, {
+  //       folder: 'tu-carpeta',
+  //       resource_type: 'image'
+  //     });
 
-      // Elimina el archivo temporal después de subirlo a Cloudinary
-      fs.unlinkSync(filePath);
+  //     // Elimina el archivo temporal después de subirlo a Cloudinary
+  //     fs.unlinkSync(filePath);
 
-      console.log(result);
-      const newProduct = this.producRepository.create({
-        imagenn: result.secure_url,
-        ...data
-      });
+  //     console.log(result);
+  //     const newProduct = this.producRepository.create({
+  //       imagenn: result.secure_url,
+  //       ...data
+  //     });
 
-      return this.producRepository.save(newProduct);
-    } catch (error) 
-    {
-      console.error(error);
-      throw new HttpException('Error al subir la imagen a Cloudinary', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+  //     return this.producRepository.save(newProduct);
+  //   } catch (error) 
+  //   {
+  //     console.error(error);
+  //     throw new HttpException('Error al subir la imagen a Cloudinary', HttpStatus.INTERNAL_SERVER_ERROR);
+  //   }
+  // }
 
   findAll() {
     return this.producRepository.find();

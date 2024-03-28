@@ -13,7 +13,7 @@ export class ProductsController {
   @Post()
   create(@Body() createProductDto: CreateProductDto,@UploadedFile() file: Express.Multer.File) {
     console.log(createProductDto)
-    return this.productsService.create(createProductDto, file);
+    //return this.productsService.create(createProductDto, file);
   }
 
   @Post('pago')

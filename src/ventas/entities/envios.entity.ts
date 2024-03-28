@@ -1,11 +1,13 @@
-import { Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { DetallesVenta } from "./detalles_venta.entity";
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('envios')
 export class Envios{
     @PrimaryGeneratedColumn()
     id:number;
-
-    @OneToMany(()=>DetallesVenta, detallesVenta => detallesVenta.envio)
-    detallesVenta:DetallesVenta;
+    @Column()
+    numero_guia:number;
+    @Column({type:'date'})
+    fecha_salida:Date;
+    @Column({type:'date'})
+    fecha_entrega:Date;
 }
