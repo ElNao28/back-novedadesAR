@@ -5,8 +5,8 @@ import { User } from 'src/users/entities/user.entity';
 export class Carrito {
     @PrimaryGeneratedColumn()
     id:number;
-    @Column({type:'bool'})
-    estado:boolean;
+    @Column({default:'activo'})
+    estado:string;
 
     @ManyToOne(()=>User, user => user.carrito)
     usuario:User;

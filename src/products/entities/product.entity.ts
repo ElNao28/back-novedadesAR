@@ -30,6 +30,6 @@ export class Product {
     @OneToMany(()=>DetallesVenta, detallesVenta => detallesVenta.producto)
     detalleVenta:DetallesVenta;
 
-    @OneToMany(()=>Imagenes, imagenes => imagenes)
-    imagen:Imagenes[]
+    @OneToMany(()=>Imagenes, imagenes => imagenes.producto)
+    imagen:Imagenes[];
 }

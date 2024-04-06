@@ -8,7 +8,7 @@ import { error } from 'console';
 export class LoginController {
   constructor(private readonly loginService: LoginService, private userService:UsersService) {}
 
-  intento:number = 0;
+  intento:number = 0; 
 
   @Post()
    async validLogin(@Body() createLoginDto: ValidLoginDto) {
@@ -19,7 +19,6 @@ export class LoginController {
        if(datos === null) throw new error("error")
 
        this.intento = await this.userService.getIntentos(datos.id);
-       console.log(this.intento);
        if(this.intento === 8){  
          return {
          message: 'Numero de maxinmo de intentos alcanzado',
@@ -33,7 +32,7 @@ export class LoginController {
            if(this.intento >= 8)
            {
              console.log("la de abajo")
-             //this.loginService.resetearIntentos(datos.id)
+             this.loginService.resetearIntentos(datos.id)
              return {
                    message: 'Numero de maxinmo de intentos alcanzado',
                    status: HttpStatus.CONFLICT,
@@ -45,7 +44,7 @@ export class LoginController {
              const data = this.loginService.validLogin(createLoginDto);
              if((await data).valid === true)
              {
-               //this.loginService.resetearIntentos(datos.id)
+               this.loginService.resetearIntentos(datos.id)
                return {
                      message: 'Login correcto',
                      status: 200,

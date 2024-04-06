@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Get } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
@@ -10,17 +10,21 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { ResDto } from './dto/res.dto';
-import MercadoPagoConfig, { Preference } from 'mercadopago';
+import MercadoPagoConfig, { Preference, Payment } from 'mercadopago';
+import { VentasService } from 'src/ventas/ventas.service';
+import { User } from 'src/users/entities/user.entity';
+import { Items } from './entities/Items.interface';
 // Configura la API key y secret key de Cloudinary
 cloudinary.v2.config({
   cloud_name: 'dy5jdb6tv',
   api_key: '248559475624584',
   api_secret: 'eLssEgrbq41bWTwhhKKpRZK-UBQ'
 });
-
 @Injectable()
 export class ProductsService {
-  constructor(@InjectRepository(Product) private producRepository: Repository<Product>) { }
+  constructor(
+    @InjectRepository(Product) private producRepository: Repository<Product>,
+    private ventasService: VentasService) { }
 
   // async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
 
@@ -58,42 +62,44 @@ export class ProductsService {
   // }
 
   findAll() {
-    return this.producRepository.find();
+    return this.producRepository.find({
+      where: {
+        status: "activo"
+      },
+      relations: ['imagen']
+    },);
   }
 
   findOne(id: number) {
     const product = this.producRepository.findOne({
       where: {
         id: id
-      }
+      },
+      relations: ['imagen']
     })
     return product;
   }
-
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
-  }
-
-  async formPago(res: ResDto) {
+  async formPago(res: ResDto[]) {
     let url = "";
     const client = new MercadoPagoConfig({
       accessToken: 'TEST-3954097920512827-030816-523113fab0eca51c8a57d53e2cf509d6-1719432312'
     });
 
     const preference = new Preference(client);
-
+    const products: Items[] = []
+    for (let i = 0; i < res.length; i++) {
+      products.push({
+        id: res[i].id,
+        title: res[i].title,
+        quantity: parseInt(res[i].cantidad),
+        unit_price: res[i].precio,
+        description: "ola"
+      })
+    }
     await preference.create({
       body: {
-        payment_methods: {
-          excluded_payment_methods: [],
+        payment_methods: { 
           excluded_payment_types: [
-            {
-              id: "credit_card"
-            },
             {
               id: "bank_transfer"
             },
@@ -103,28 +109,35 @@ export class ProductsService {
           ],
           installments: 1
         },
-        items: [
-          {
-            id: res.id,
-            title: res.title,
-            quantity: 1,
-            unit_price: res.precio
-          }
-        ],
+        items: products,
         back_urls: {
           success: 'http://localhost:4200/inicio',
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
-        }
+        },
+        notification_url: 'https://ae92-187-249-108-44.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
-        console.log(res.sandbox_init_point)
-        url = res.sandbox_init_point
+        url = res.sandbox_init_point;
       })
-      .catch();
-      return {
-        url:url
-      }
+      .catch(err => {
+        console.log(err)
+      });
+    return {
+      url: url
+    }
   }
+  async checkPayment(data:number,idUser:string,idCard:string) {
+    const client = new MercadoPagoConfig({
+      accessToken: 'TEST-3954097920512827-030816-523113fab0eca51c8a57d53e2cf509d6-1719432312'
+    });
+    if(data){
+    const pago = await new Payment(client).capture({ id: data });
+    console.log(pago)
+    if (pago.status === 'approved') {
+      this.ventasService.addVenta(parseInt(idUser),pago.additional_info.items,idCard,pago.transaction_details.total_paid_amount,pago.date_approved);
+    }
+  }
+}
 }

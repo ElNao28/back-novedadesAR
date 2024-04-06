@@ -8,7 +8,8 @@ import * as bcryptjs from 'bcryptjs'
 import { Intentos } from './entities/intentos.entity';
 import { CreateUbicacionDto } from './dto/create-ubicacion.dto';
 import { Ubicacion } from './entities/ubicacion.entity';
-
+import { Rol } from './entities/rol.entity';
+import { Carrito } from 'src/carrito/entities/carrito.entity';
 @Injectable()
 export class UsersService {
 
@@ -16,6 +17,8 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Intentos) private intentosRepository: Repository<Intentos>,
     @InjectRepository(Ubicacion) private ubicacionRepository: Repository<Ubicacion>,
+    @InjectRepository(Rol) private rolRepository:Repository<Rol>,
+    @InjectRepository(Carrito) private cardRepository:Repository<Carrito>,
   ) { }
 
   async createUser(userData: CreateUserDto) {
@@ -50,13 +53,15 @@ export class UsersService {
 
     const newUser = this.userRepository.create({
       password: bcryptjs.hashSync(password, 10),
-      ...userDt
+      ...userDt,
     });
     this.userRepository.save(newUser);
 
     setTimeout(() => {
-      this.createTableIntentos(userDt.email)
-      this.createUbicacionTable(dataUbi,userDt.email)
+      this.createTableIntentos(userDt.email);
+      this.createUbicacionTable(dataUbi,userDt.email);
+      this.addRol(userDt.email);
+      this.addCard(userDt.email);
     }, 1000);
     return {
       message: 'Usuario creado correctamente',
@@ -95,7 +100,33 @@ export class UsersService {
 
     this.userRepository.save(userFound);
   }
-
+  
+  async addRol(emailUser:string){
+    const foundRol = await this.rolRepository.findOne({
+      where:{
+        rol:'user'
+      }
+    });
+    const userFound = await this.userRepository.findOne({
+      where:{
+        email:emailUser
+      }
+    });
+    this.userRepository.update(userFound.id,{
+      rol:foundRol
+    })
+  }
+  async addCard(emailUser:string){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        email:emailUser
+      }
+    });
+    const createCard =  this.cardRepository.create({
+      usuario:foundUser
+    });
+    this.cardRepository.save(createCard)
+  }
   getUsers() {
     const users = this.userRepository.find({
     });
@@ -171,5 +202,87 @@ export class UsersService {
   DeleteUser(id: number) {
     const deleteUser = this.userRepository.delete({ id: id })
     return deleteUser;
+  }
+
+  async getDomicio(id:number){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:id
+      },
+      relations:['ubicacion']
+    });
+    return foundUser.ubicacion
+  }
+  async getDataProfile(idUser:number){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:idUser
+      }
+    });
+    return {
+      status:HttpStatus.OK,
+      name:foundUser.name +" "+ foundUser.lastname + " " + foundUser.motherLastname,
+      email:foundUser.email
+    }
+  }
+  async getDataPersonal(idUser:number){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:idUser
+      }
+    });
+    return{
+      status:HttpStatus.OK,
+      name:foundUser.name,
+      lastname:foundUser.lastname,
+      motherLastname:foundUser.motherLastname,
+      gender:foundUser.gender,
+      birthdate:foundUser.birthdate
+    }
+  }
+  updateUserById(id:number,data:CreateUserDto){
+    const {password, ...dataUser} = data;
+    if(password){
+      console.log("pass")
+      this.userRepository.update(id,{
+        password:bcryptjs.hashSync(password,10),
+        ...dataUser
+      });
+    }
+    else{
+      console.log("entra aqui")
+      this.userRepository.update(id,data)
+    }
+
+    
+    return{
+      status:HttpStatus.OK,
+      message:'Datos actualizados correctamente'
+    }
+  }
+  async getDataCuenta(idUser:number){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:idUser
+      }
+    });
+    return{
+      status:HttpStatus.OK,
+      email:foundUser.email,
+      cellphone:foundUser.cellphone,
+    }
+  }
+  async getDataSeguridad(idUser:number){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:idUser
+      },
+      relations:['question']
+    });
+    return{
+      status:HttpStatus.OK,
+      question:foundUser.question.id,
+      answer:foundUser.answer
+    }
   }
 }

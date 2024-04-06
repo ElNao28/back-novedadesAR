@@ -6,8 +6,8 @@ export class Envios{
     id:number;
     @Column()
     numero_guia:number;
-    @Column({type:'date'})
+    @Column({type:'date', nullable:true})
     fecha_salida:Date;
-    @Column({type:'date'})
+    @Column({type:'date', nullable:true})
     fecha_entrega:Date;
 }

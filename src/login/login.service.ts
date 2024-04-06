@@ -22,9 +22,8 @@ export class LoginService {
 
       const data = this.userService.getUser(createLoginDto.email)
       const payload = { sub: (await data).id, username: (await data).name };
-      const tocken =  this.jwtService.sign(payload)
-      const res = this.jwtService.decode(tocken)
-      console.log(res);
+      const tocken =  this.jwtService.sign(payload);
+      const res = this.jwtService.decode(tocken);
 
       if(await bcryptjs.compare(createLoginDto.password, (await data).password))
         return{
@@ -48,17 +47,20 @@ export class LoginService {
     this.intentosRepository.update(dataUser.intentos.id,{
       intentos: intento
     })
-    // this.userRepository.query(
-    //   "UPDATE users SET intentos = "+intento+" WHERE id = "+id+""
-    // )
   }
 
-  resetearIntentos(id:number){
+  async resetearIntentos(id:number){
+    const dataUser = await this.userRepository.findOne({
+      where:{
+        id:id
+      },
+      relations:['intentos']
+    });
     console.log("conteo iniciado")
     setTimeout(()=>{
-      this.userRepository.query(
-        "UPDATE users SET intentos = 0 WHERE id = "+id+""
-      )
+      this.intentosRepository.update(dataUser.intentos.id,{
+        intentos:0
+      })
       console.log("Intentos reseteados")
     },10000)
   }

@@ -6,12 +6,12 @@ import { CreateUbicacionDto } from './dto/create-ubicacion.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
- @Post()
- create(@Body() newUser: CreateUserDto) {
-   return this.usersService.createUser(newUser);
- }
+  @Post()
+  create(@Body() newUser: CreateUserDto) {
+    return this.usersService.createUser(newUser);
+  }
   @Get()
   findAll() {
     return this.usersService.getUsers();
@@ -22,16 +22,41 @@ export class UsersController {
     return this.usersService.getUser(email);
   }
 
- @Patch(':email')
- update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-   return this.usersService.updateUser(email, updateUserDto);
- }
- @Patch('ubicacion/:email')
- updateUbicacion(@Param('email') email: string, @Body() updateUbicacionDto: CreateUbicacionDto) {
-   return this.usersService.updateUbicacion(email, updateUbicacionDto);
- }
+  @Patch(':email')
+  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(email, updateUserDto);
+  }
+  @Patch('ubicacion/:email')
+  updateUbicacion(@Param('email') email: string, @Body() updateUbicacionDto: CreateUbicacionDto) {
+    return this.usersService.updateUbicacion(email, updateUbicacionDto);
+  }
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.DeleteUser(+id);
+  }
+  @Get('ubicacion/:id')
+  getUbicacioUser(@Param('id') id: string) {
+    let newId = parseInt(id);
+    return this.usersService.getDomicio(newId);
+  }
+  @Get('profile/:id')
+  getDataProfile(@Param('id') id: string) {
+    return this.usersService.getDataProfile(parseInt(id));
+  }
+  @Get('profile/personal/:id')
+  getDataPersonal(@Param('id') id: string) {
+    return this.usersService.getDataPersonal(parseInt(id));
+  }
+  @Patch('profile/update-user/:id')
+  updateUser(@Param('id') id: string,@Body()data:CreateUserDto) {
+    return this.usersService.updateUserById(parseInt(id),data);
+  }
+  @Get('profile/cuenta/:id')
+  getDataCuenta(@Param('id') id: string) {
+    return this.usersService.getDataCuenta(parseInt(id));
+  }
+  @Get('profile/seguridad/:id')
+  getDataSeguridad(@Param('id') id: string) {
+    return this.usersService.getDataSeguridad(parseInt(id));
   }
 }

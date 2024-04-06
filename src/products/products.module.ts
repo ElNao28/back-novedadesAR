@@ -4,10 +4,15 @@ import { ProductsController } from './products.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Imagenes } from './entities/imagenes.entity';
+import { VentasService } from 'src/ventas/ventas.service';
+import { Venta } from '../ventas/entities/venta.entity';
+import { DetallesVenta } from 'src/ventas/entities/detalles_venta.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Carrito } from 'src/carrito/entities/carrito.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product, Imagenes])],
+  imports: [TypeOrmModule.forFeature([Product, Imagenes,Venta,User,DetallesVenta,Carrito])],
   controllers: [ProductsController],
-  providers: [ProductsService],
+  providers: [ProductsService,VentasService],
 })
 export class ProductsModule {}
