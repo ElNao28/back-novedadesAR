@@ -6,5 +6,8 @@ import { UpdateVentaDto } from './dto/update-venta.dto';
 @Controller('ventas')
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
-
+  @Get(':id')
+  getVentas(@Param('id')idUser:string){
+    return this.ventasService.getVentas(parseInt(idUser));
+  }
 }

@@ -99,7 +99,11 @@ export class ProductsService {
     await preference.create({
       body: {
         payment_methods: { 
+          excluded_payment_methods: [],
           excluded_payment_types: [
+            {
+              id: "credit_card"
+            },
             {
               id: "bank_transfer"
             },
@@ -115,7 +119,7 @@ export class ProductsService {
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
         },
-        notification_url: 'https://ae92-187-249-108-44.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url: 'https://d033-187-249-108-42.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {

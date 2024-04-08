@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Venta } from './entities/venta.entity';
 import { Repository } from 'typeorm';
@@ -17,7 +17,7 @@ export class VentasService {
         @InjectRepository(DetallesVenta) private detallesVenta: Repository<DetallesVenta>,
         @InjectRepository(Carrito) private carritoRepository: Repository<Carrito>,
     ) { }
-    async addVenta(idUser: number, products: Items[],idCard:string,total:number,fecha:string) {
+    async addVenta(idUser: number, products: Items[], idCard: string, total: number, fecha: string) {
         console.log(total)
         const foundUser = await this.userRepository.findOne({
             where: {
@@ -26,8 +26,8 @@ export class VentasService {
         });
 
         const newVenta = this.ventaRepository.create({
-            total_venta:total,
-            fecha_venta:fecha,
+            total_venta: total,
+            fecha_venta: fecha,
             usuario: foundUser
         });
         const saveVenta = await this.ventaRepository.save(newVenta)
@@ -59,15 +59,32 @@ export class VentasService {
                 });
             }
             saveDetallesVenta;
-            if(idCard !== 'null'){
-                this.carritoRepository.update(parseInt(idCard),{
+            if (idCard !== 'null') {
+                this.carritoRepository.update(parseInt(idCard), {
                     estado: 'inactivo'
                 });
             }
         }
         const newCard = this.carritoRepository.create({
-            usuario:foundUser
+            usuario: foundUser
         })
         this.carritoRepository.save(newCard)
+    }
+    async getVentas(idUser:number) {
+        const foundUser = await this.userRepository.findOne({
+            where: {
+                id: idUser
+            }
+        });
+        const detallesVenta = await this.ventaRepository.find({
+            where:{
+                usuario:foundUser
+            },
+            relations:['detallesVenta','detallesVenta.producto']
+        });
+        return{
+            status:HttpStatus.OK,
+            detallesVenta:detallesVenta
+        }
     }
 }
