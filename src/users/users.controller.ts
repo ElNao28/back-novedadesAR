@@ -26,9 +26,9 @@ export class UsersController {
   update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(email, updateUserDto);
   }
-  @Patch('ubicacion/:email')
-  updateUbicacion(@Param('email') email: string, @Body() updateUbicacionDto: CreateUbicacionDto) {
-    return this.usersService.updateUbicacion(email, updateUbicacionDto);
+  @Patch('ubicacion/:id')
+  updateUbicacion(@Param('id') idUser: string, @Body() updateUbicacionDto: CreateUbicacionDto) {
+    return this.usersService.updateUbicacion(parseInt(idUser), updateUbicacionDto);
   }
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -58,5 +58,9 @@ export class UsersController {
   @Get('profile/seguridad/:id')
   getDataSeguridad(@Param('id') id: string) {
     return this.usersService.getDataSeguridad(parseInt(id));
+  }
+  @Get('profile/ubicacion/:id')
+  getDataUbicacion(@Param('id') id: string) {
+    return this.usersService.getDataUbicacion(parseInt(id));
   }
 }

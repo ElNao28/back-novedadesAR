@@ -12,6 +12,7 @@ export class CreateUserDto {
     municipio:string;
     cp:number;
     colonia:string;
+    referencia:string;
     questionId:number;
     rolId:number;
 }

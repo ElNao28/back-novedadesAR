@@ -27,7 +27,8 @@ export class UsersService {
       estado: userData.estado,
       municipio: userData.municipio,
       cp:userData.cp,
-      colonia:userData.colonia
+      colonia:userData.colonia,
+      referencia:userData.referencia
     }
 
     const foundEmail = await this.userRepository.findOne({
@@ -172,21 +173,25 @@ export class UsersService {
     };
   }
 
-  async updateUbicacion(email:string, dataUbic:CreateUbicacionDto){
+  async updateUbicacion(idUser:number, dataUbic:CreateUbicacionDto){
     const foundUser = await this.userRepository.findOne({
       where:{
-        email:email
+        id:idUser
       },
       relations:['ubicacion']
     });
 
     if(!foundUser) return new HttpException("error", HttpStatus.FOUND);
-    this.ubicacionRepository.update(foundUser.ubicacion.id,dataUbic)
+    this.ubicacionRepository.update(foundUser.ubicacion.id,dataUbic);
+    return{
+      message:"se actualizo correctamente",
+      status:HttpStatus.OK
+    }
   }
 
   async getIntentos(idUser:number){
     const dataUser = await this.userRepository.findOne({
-      where:{
+      where:{ 
         id:idUser
       },
       relations:['intentos']
@@ -283,6 +288,22 @@ export class UsersService {
       status:HttpStatus.OK,
       question:foundUser.question.id,
       answer:foundUser.answer
+    }
+  }
+  async getDataUbicacion(idUser:number){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:idUser
+      },
+      relations:['ubicacion']
+    });
+    return{
+      status:HttpStatus.OK,
+      estado:foundUser.ubicacion.estado,
+      municipio:foundUser.ubicacion.municipio,
+      colonia:foundUser.ubicacion.colonia,
+      cp:foundUser.ubicacion.cp,
+      referencia: foundUser.ubicacion.referencia
     }
   }
 }

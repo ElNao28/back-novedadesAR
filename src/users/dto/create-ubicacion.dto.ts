@@ -3,4 +3,5 @@ export class CreateUbicacionDto{
     municipio: string;
     cp:number;
     colonia:string;
+    referencia:string;
 }
