@@ -10,6 +10,8 @@ import { CreateUbicacionDto } from './dto/create-ubicacion.dto';
 import { Ubicacion } from './entities/ubicacion.entity';
 import { Rol } from './entities/rol.entity';
 import { Carrito } from 'src/carrito/entities/carrito.entity';
+import { LoginService } from '../login/login.service';
+
 @Injectable()
 export class UsersService {
 
@@ -161,7 +163,12 @@ export class UsersService {
       this.userRepository.update( dataUser.id, {
         password: bcryptjs.hashSync(password, 10) ,
         ...data
-      })
+      });
+      const foundUser = await this.userRepository.findOne({
+        where:{
+          email:email
+        }
+      });
     }
     else{
       this.userRepository.update((await dataUser).id,updateData)

@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Intentos } from 'src/users/entities/intentos.entity';
+import { Logs } from 'src/users/entities/logs.entity';
 
 @Injectable()
 export class LoginService {
@@ -14,6 +15,7 @@ export class LoginService {
   constructor(
       @InjectRepository(User) private userRepository:Repository<User>,
       @InjectRepository(Intentos) private intentosRepository:Repository<Intentos>,
+      @InjectRepository(Logs) private logsRepository: Repository<Logs>,
       private userService:UsersService,
       private jwtService: JwtService
     ){}
@@ -64,4 +66,20 @@ export class LoginService {
       console.log("Intentos reseteados")
     },10000)
   }
-}
+  async createlogs(data:{idUser:number,accion:string,ip:string,url:string,status:number,fecha:string}){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:data.idUser
+      }
+    });
+    const newLog = this.logsRepository.create({
+     accion:data.accion,
+     ip:data.ip,
+     url_solicitada:data.url,
+     status:data.status,
+     usuario:foundUser,
+     fecha:data.fecha
+    });
+    this.logsRepository.save(newLog);
+  }
+} 

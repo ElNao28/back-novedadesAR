@@ -13,7 +13,7 @@ import { Carrito } from 'src/carrito/entities/carrito.entity'
 @Module({
   imports:[TypeOrmModule.forFeature([
     User,Intentos, Logs, Question,Rol,Ubicacion,Carrito
-  ])],
+  ]),],
   controllers: [UsersController],
   providers: [UsersService],
   exports:[UsersService] 

@@ -24,7 +24,7 @@ export class UsersController {
 
   @Patch(':email')
   update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateUser(email, updateUserDto);
+    return this.usersService.updateUser(email,updateUserDto);
   }
   @Patch('ubicacion/:id')
   updateUbicacion(@Param('id') idUser: string, @Body() updateUbicacionDto: CreateUbicacionDto) {

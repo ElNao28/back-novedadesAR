@@ -15,4 +15,6 @@ export class CreateUserDto {
     referencia:string;
     questionId:number;
     rolId:number;
+    ip?:string;
+    fecha?:string;
 }

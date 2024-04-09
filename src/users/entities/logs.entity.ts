@@ -7,8 +7,14 @@ export class Logs{
     id:number;
     @Column()
     accion:string;
-    @Column({type:'date'})
-    fecha: Date;
+    @Column()
+    ip:string;
+    @Column()
+    url_solicitada:string;
+    @Column()
+    status:number;
+    @Column()
+    fecha: string;
 
     @ManyToOne(()=>User, user => user.logs)
     usuario:User;
