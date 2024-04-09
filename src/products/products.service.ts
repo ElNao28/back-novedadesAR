@@ -100,17 +100,7 @@ export class ProductsService {
       body: {
         payment_methods: { 
           excluded_payment_methods: [],
-          excluded_payment_types: [
-            {
-              id: "credit_card"
-            },
-            {
-              id: "bank_transfer"
-            },
-            {
-              id: "ticket"
-            }
-          ],
+          excluded_payment_types: [],
           installments: 1
         },
         items: products,
