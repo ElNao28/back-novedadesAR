@@ -85,6 +85,8 @@ export class ProductsService {
       accessToken: 'TEST-3954097920512827-030816-523113fab0eca51c8a57d53e2cf509d6-1719432312'
     });
 
+    const payment = new Payment(client)
+    
     const preference = new Preference(client);
     const products: Items[] = []
     for (let i = 0; i < res.length; i++) {
@@ -100,7 +102,8 @@ export class ProductsService {
       body: {
         payment_methods: { 
           excluded_payment_methods: [],
-          excluded_payment_types: [],
+          excluded_payment_types: [
+          ],
           installments: 1
         },
         items: products,
@@ -109,7 +112,7 @@ export class ProductsService {
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
         },
-        notification_url: 'https://d033-187-249-108-42.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
+      notification_url: 'https://f7cd-200-68-186-17.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
@@ -134,4 +137,13 @@ export class ProductsService {
     }
   }
 }
+async getProductByCategory(type:string){
+  const foundProducts = await this.producRepository.find({
+    where:{
+      categoria:type
+    }
+  });
+  return foundProducts;
+}
+
 }
