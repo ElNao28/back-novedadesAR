@@ -39,4 +39,8 @@ export class ProductsController {
       console.log("error")
     }
   }
+  @Get('category/:id')
+  getProductsByCategory(@Param('id')type:string){
+    return this.productsService.getProductByCategory(type);
+  }
 }
