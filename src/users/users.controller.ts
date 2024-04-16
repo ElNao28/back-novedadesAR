@@ -22,9 +22,10 @@ export class UsersController {
     return this.usersService.getUser(email);
   }
 
-  @Patch(':email')
-  update(@Param('email') email: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateUser(email,updateUserDto);
+  @Patch('password/:email')
+  updatePassword(@Param('email') email: string, @Body() dataPassword: {password:string,ip:string,fecha:string}) {
+    console.log(dataPassword)
+    return this.usersService.updatePassword(email,dataPassword);
   }
   @Patch('ubicacion/:id')
   updateUbicacion(@Param('id') idUser: string, @Body() updateUbicacionDto: CreateUbicacionDto) {

@@ -11,6 +11,7 @@ import { Ubicacion } from './entities/ubicacion.entity';
 import { Rol } from './entities/rol.entity';
 import { Carrito } from 'src/carrito/entities/carrito.entity';
 import { LoginService } from '../login/login.service';
+import { Logs } from './entities/logs.entity';
 
 @Injectable()
 export class UsersService {
@@ -19,18 +20,19 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Intentos) private intentosRepository: Repository<Intentos>,
     @InjectRepository(Ubicacion) private ubicacionRepository: Repository<Ubicacion>,
-    @InjectRepository(Rol) private rolRepository:Repository<Rol>,
-    @InjectRepository(Carrito) private cardRepository:Repository<Carrito>,
+    @InjectRepository(Rol) private rolRepository: Repository<Rol>,
+    @InjectRepository(Carrito) private cardRepository: Repository<Carrito>,
+    @InjectRepository(Logs) private logsRepository: Repository<Logs>,
   ) { }
 
   async createUser(userData: CreateUserDto) {
 
-    let dataUbi:CreateUbicacionDto = {
+    let dataUbi: CreateUbicacionDto = {
       estado: userData.estado,
       municipio: userData.municipio,
-      cp:userData.cp,
-      colonia:userData.colonia,
-      referencia:userData.referencia
+      cp: userData.cp,
+      colonia: userData.colonia,
+      referencia: userData.referencia
     }
 
     const foundEmail = await this.userRepository.findOne({
@@ -62,7 +64,7 @@ export class UsersService {
 
     setTimeout(() => {
       this.createTableIntentos(userDt.email);
-      this.createUbicacionTable(dataUbi,userDt.email);
+      this.createUbicacionTable(dataUbi, userDt.email);
       this.addRol(userDt.email);
       this.addCard(userDt.email);
     }, 1000);
@@ -71,13 +73,13 @@ export class UsersService {
       status: HttpStatus.ACCEPTED,
     };
   }
-  async createTableIntentos(emailUser:string) {
+  async createTableIntentos(emailUser: string) {
     const userFound = await this.userRepository.findOne({
       where: {
         email: emailUser
       }
     });
-    if(!userFound) new HttpException('error',HttpStatus.BAD_REQUEST);
+    if (!userFound) new HttpException('error', HttpStatus.BAD_REQUEST);
 
     const newIntentos = this.intentosRepository.create({
       intentos: 0
@@ -88,13 +90,13 @@ export class UsersService {
     this.userRepository.save(userFound);
   }
 
-  async createUbicacionTable(data:CreateUbicacionDto, emailUser:string) {
+  async createUbicacionTable(data: CreateUbicacionDto, emailUser: string) {
     const userFound = await this.userRepository.findOne({
       where: {
         email: emailUser
       }
     });
-    if(!userFound) new HttpException('error',HttpStatus.BAD_REQUEST);
+    if (!userFound) new HttpException('error', HttpStatus.BAD_REQUEST);
 
     const newUbicacion = this.ubicacionRepository.create(data);
     const saveUbicacion = await this.ubicacionRepository.save(newUbicacion)
@@ -103,30 +105,30 @@ export class UsersService {
 
     this.userRepository.save(userFound);
   }
-  
-  async addRol(emailUser:string){
+
+  async addRol(emailUser: string) {
     const foundRol = await this.rolRepository.findOne({
-      where:{
-        rol:'user'
+      where: {
+        rol: 'user'
       }
     });
     const userFound = await this.userRepository.findOne({
-      where:{
-        email:emailUser
+      where: {
+        email: emailUser
       }
     });
-    this.userRepository.update(userFound.id,{
-      rol:foundRol
+    this.userRepository.update(userFound.id, {
+      rol: foundRol
     })
   }
-  async addCard(emailUser:string){
+  async addCard(emailUser: string) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        email:emailUser
+      where: {
+        email: emailUser
       }
     });
-    const createCard =  this.cardRepository.create({
-      usuario:foundUser
+    const createCard = this.cardRepository.create({
+      usuario: foundUser
     });
     this.cardRepository.save(createCard)
   }
@@ -156,161 +158,176 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(email: string, updateData: UpdateUserDto) {
+  async updatePassword(email: string, updateData: { password: string, ip: string, fecha: string }) {
     const dataUser = await this.getUser(email)
     const { password, ...data } = updateData;
-    if(updateData.password){
-      this.userRepository.update( dataUser.id, {
-        password: bcryptjs.hashSync(password, 10) ,
-        ...data
+    if (updateData.password) {
+      this.userRepository.update(dataUser.id, {
+        password: bcryptjs.hashSync(password, 10)
       });
-      const foundUser = await this.userRepository.findOne({
-        where:{
-          email:email
-        }
-      });
+      this.createlogs({
+        idUser: dataUser.id, 
+        accion: 'Actualizacion de contraseña', 
+        ip: updateData.ip, 
+        url: 'users/password/:email', 
+        status: 202, 
+        fecha: updateData.fecha
+      })
+      return {
+        message: 'Contraseña se actualizo correctamente',
+        status: HttpStatus.ACCEPTED,
+      };
     }
-    else{
-      this.userRepository.update((await dataUser).id,updateData)
-    }
-    
-    return {
-      message: 'Usuario creado correctamente',
-      status: HttpStatus.ACCEPTED,
-    };
   }
 
-  async updateUbicacion(idUser:number, dataUbic:CreateUbicacionDto){
+  async updateUbicacion(idUser: number, dataUbic: CreateUbicacionDto) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        id:idUser
+      where: {
+        id: idUser
       },
-      relations:['ubicacion']
+      relations: ['ubicacion']
     });
 
-    if(!foundUser) return new HttpException("error", HttpStatus.FOUND);
-    this.ubicacionRepository.update(foundUser.ubicacion.id,dataUbic);
-    return{
-      message:"se actualizo correctamente",
-      status:HttpStatus.OK
+    if (!foundUser) return new HttpException("error", HttpStatus.FOUND);
+    this.ubicacionRepository.update(foundUser.ubicacion.id, dataUbic);
+    return {
+      message: "se actualizo correctamente",
+      status: HttpStatus.OK
     }
   }
 
-  async getIntentos(idUser:number){
+  async getIntentos(idUser: number) {
     const dataUser = await this.userRepository.findOne({
-      where:{ 
-        id:idUser
+      where: {
+        id: idUser
       },
-      relations:['intentos']
+      relations: ['intentos']
     })
     const intentosUser = await this.intentosRepository.findOne({
-      where:{
-        id:dataUser.intentos.id,
+      where: {
+        id: dataUser.intentos.id,
       }
     })
     return intentosUser.intentos;
   }
-  
+
   DeleteUser(id: number) {
     const deleteUser = this.userRepository.delete({ id: id })
     return deleteUser;
   }
 
-  async getDomicio(id:number){
+  async getDomicio(id: number) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        id:id
+      where: {
+        id: id
       },
-      relations:['ubicacion']
+      relations: ['ubicacion']
     });
     return foundUser.ubicacion
   }
-  async getDataProfile(idUser:number){
+  async getDataProfile(idUser: number) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        id:idUser
+      where: {
+        id: idUser
       }
     });
     return {
-      status:HttpStatus.OK,
-      name:foundUser.name +" "+ foundUser.lastname + " " + foundUser.motherLastname,
-      email:foundUser.email
+      status: HttpStatus.OK,
+      name: foundUser.name + " " + foundUser.lastname + " " + foundUser.motherLastname,
+      email: foundUser.email
     }
   }
-  async getDataPersonal(idUser:number){
+  async getDataPersonal(idUser: number) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        id:idUser
+      where: {
+        id: idUser
       }
     });
-    return{
-      status:HttpStatus.OK,
-      name:foundUser.name,
-      lastname:foundUser.lastname,
-      motherLastname:foundUser.motherLastname,
-      gender:foundUser.gender,
-      birthdate:foundUser.birthdate
+    return {
+      status: HttpStatus.OK,
+      name: foundUser.name,
+      lastname: foundUser.lastname,
+      motherLastname: foundUser.motherLastname,
+      gender: foundUser.gender,
+      birthdate: foundUser.birthdate
     }
   }
-  updateUserById(id:number,data:CreateUserDto){
-    const {password, ...dataUser} = data;
-    if(password){
+  updateUserById(id: number, data: CreateUserDto) {
+    const { password, ...dataUser } = data;
+    if (password) {
       console.log("pass")
-      this.userRepository.update(id,{
-        password:bcryptjs.hashSync(password,10),
+      this.userRepository.update(id, {
+        password: bcryptjs.hashSync(password, 10),
         ...dataUser
       });
     }
-    else{
+    else {
       console.log("entra aqui")
-      this.userRepository.update(id,data)
+      this.userRepository.update(id, data)
     }
 
-    
-    return{
-      status:HttpStatus.OK,
-      message:'Datos actualizados correctamente'
+
+    return {
+      status: HttpStatus.OK,
+      message: 'Datos actualizados correctamente'
     }
   }
-  async getDataCuenta(idUser:number){
+  async getDataCuenta(idUser: number) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        id:idUser
+      where: {
+        id: idUser
       }
     });
-    return{
-      status:HttpStatus.OK,
-      email:foundUser.email,
-      cellphone:foundUser.cellphone,
+    return {
+      status: HttpStatus.OK,
+      email: foundUser.email,
+      cellphone: foundUser.cellphone,
     }
   }
-  async getDataSeguridad(idUser:number){
+  async getDataSeguridad(idUser: number) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        id:idUser
+      where: {
+        id: idUser
       },
-      relations:['question']
+      relations: ['question']
     });
-    return{
-      status:HttpStatus.OK,
-      question:foundUser.question.id,
-      answer:foundUser.answer
+    return {
+      status: HttpStatus.OK,
+      question: foundUser.question.id,
+      answer: foundUser.answer
     }
   }
-  async getDataUbicacion(idUser:number){
+  async getDataUbicacion(idUser: number) {
     const foundUser = await this.userRepository.findOne({
-      where:{
-        id:idUser
+      where: {
+        id: idUser
       },
-      relations:['ubicacion']
+      relations: ['ubicacion']
     });
-    return{
-      status:HttpStatus.OK,
-      estado:foundUser.ubicacion.estado,
-      municipio:foundUser.ubicacion.municipio,
-      colonia:foundUser.ubicacion.colonia,
-      cp:foundUser.ubicacion.cp,
+    return {
+      status: HttpStatus.OK,
+      estado: foundUser.ubicacion.estado,
+      municipio: foundUser.ubicacion.municipio,
+      colonia: foundUser.ubicacion.colonia,
+      cp: foundUser.ubicacion.cp,
       referencia: foundUser.ubicacion.referencia
     }
+  }
+
+  async createlogs(data: { idUser: number, accion: string, ip: string, url: string, status: number, fecha: string }) {
+    const foundUser = await this.userRepository.findOne({
+      where: {
+        id: data.idUser
+      }
+    });
+    const newLog = this.logsRepository.create({
+      accion: data.accion,
+      ip: data.ip,
+      url_solicitada: data.url,
+      status: data.status,
+      usuario: foundUser,
+      fecha: data.fecha
+    });
+    this.logsRepository.save(newLog);
   }
 }

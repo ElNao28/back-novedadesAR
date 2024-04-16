@@ -43,7 +43,7 @@ export class ProductsService {
   //       folder: 'tu-carpeta',
   //       resource_type: 'image'
   //     });
-
+ 
   //     // Elimina el archivo temporal después de subirlo a Cloudinary
   //     fs.unlinkSync(filePath);
 
