@@ -23,6 +23,8 @@ export class Product {
     descuento: number;
     @Column({default:'activo'})
     status:string;
+    @Column()
+    tipo:string
 
     @OneToMany(()=>DetallesCarrito, detalleCarrito => detalleCarrito.product)
     dellatesCarrito:DetallesCarrito;

@@ -146,4 +146,12 @@ async getProductByCategory(type:string){
   return foundProducts;
 }
 
+async getProductByFilter(datos){
+  console.log(datos)
+  const foundProducts = this.producRepository.find({
+    where:datos
+  })
+  return foundProducts
+}
+
 }

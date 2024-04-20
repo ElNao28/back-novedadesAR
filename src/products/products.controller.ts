@@ -43,4 +43,9 @@ export class ProductsController {
   getProductsByCategory(@Param('id')type:string){
     return this.productsService.getProductByCategory(type);
   }
+  @Post('filter')
+  getProductsByFilter(@Body()datos){
+    console.log(datos)
+    return this.productsService.getProductByFilter(datos)
+  }
 }
