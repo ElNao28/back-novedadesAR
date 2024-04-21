@@ -48,4 +48,8 @@ export class ProductsController {
     console.log(datos)
     return this.productsService.getProductByFilter(datos)
   }
+  @Get('gender/:gender/category/:tipo')
+  getProductsByGender(@Param('gender')gender:string,@Param('tipo')tipo:string){
+    return this.productsService.getProductsByGender(gender,tipo)
+  }
 }

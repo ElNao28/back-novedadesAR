@@ -43,7 +43,7 @@ export class ProductsService {
   //       folder: 'tu-carpeta',
   //       resource_type: 'image'
   //     });
- 
+
   //     // Elimina el archivo temporal después de subirlo a Cloudinary
   //     fs.unlinkSync(filePath);
 
@@ -70,14 +70,36 @@ export class ProductsService {
     },);
   }
 
-  findOne(id: number) {
-    const product = this.producRepository.findOne({
+  async findOne(id: number) {
+    let comentarios = [];
+    const product = await this.producRepository.findOne({
       where: {
         id: id
       },
-      relations: ['imagen']
+      relations: ['imagen', 'comentarios', 'comentarios.usuario']
     })
-    return product;
+    for (let i = 0; i < product.comentarios.length; i++) {
+      comentarios.push(
+        {
+          comentario: product.comentarios[i].comentario,
+          fecha:product.comentarios[i].fecha,
+          usuario:product.comentarios[i].usuario.name+" "+product.comentarios[i].usuario.lastname+" "+product.comentarios[i].usuario.motherLastname
+        }
+      )
+    }
+    return {
+      id: product.id,
+      nombre_producto: product.nombre_producto,
+      descripccion: product.descripccion,
+      stock: product.stock,
+      categoria: product.categoria,
+      rating: product.rating,
+      descuento: product.descuento,
+      status: product.status,
+      tipo: product.tipo,
+      imagen: product.imagen,
+      comentarios:comentarios
+    };
   }
   async formPago(res: ResDto[]) {
     let url = "";
@@ -86,7 +108,7 @@ export class ProductsService {
     });
 
     const payment = new Payment(client)
-    
+
     const preference = new Preference(client);
     const products: Items[] = []
     for (let i = 0; i < res.length; i++) {
@@ -100,7 +122,7 @@ export class ProductsService {
     }
     await preference.create({
       body: {
-        payment_methods: { 
+        payment_methods: {
           excluded_payment_methods: [],
           excluded_payment_types: [
           ],
@@ -112,7 +134,7 @@ export class ProductsService {
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
         },
-      notification_url: 'https://f7cd-200-68-186-17.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url: 'https://f7cd-200-68-186-17.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
@@ -125,33 +147,101 @@ export class ProductsService {
       url: url
     }
   }
-  async checkPayment(data:number,idUser:string,idCard:string) {
+  async checkPayment(data: number, idUser: string, idCard: string) {
     const client = new MercadoPagoConfig({
       accessToken: 'TEST-3954097920512827-030816-523113fab0eca51c8a57d53e2cf509d6-1719432312'
     });
-    if(data){
-    const pago = await new Payment(client).capture({ id: data });
-    console.log(pago)
-    if (pago.status === 'approved') {
-      this.ventasService.addVenta(parseInt(idUser),pago.additional_info.items,idCard,pago.transaction_details.total_paid_amount,pago.date_approved);
+    if (data) {
+      const pago = await new Payment(client).capture({ id: data });
+      console.log(pago)
+      if (pago.status === 'approved') {
+        this.ventasService.addVenta(parseInt(idUser), pago.additional_info.items, idCard, pago.transaction_details.total_paid_amount, pago.date_approved);
+      }
     }
   }
-}
-async getProductByCategory(type:string){
-  const foundProducts = await this.producRepository.find({
-    where:{
-      categoria:type
+  async getProductByCategory(type: string) {
+    const foundProducts = await this.producRepository.find({
+      where: {
+        categoria: type
+      }
+    });
+    return foundProducts;
+  }
+
+  async getProductByFilter(datos: { dama: boolean, caballero: boolean, datos: [] }) {
+    let productsFilter = [];
+    let productsSend = [];
+    for (let i = 0; i < datos.datos.length; i++) {
+      const foundProducts = await this.producRepository.find({
+        where: {
+          tipo: datos.datos[i]
+        },
+        relations: ['imagen']
+      });
+      if (foundProducts) {
+        for (let i = 0; i < foundProducts.length; i++) {
+          let product = {
+            id: foundProducts[i].id,
+            nombre_producto: foundProducts[i].nombre_producto,
+            precio: foundProducts[i].precio,
+            descripccion: foundProducts[i].descripccion,
+            stock: foundProducts[i].stock,
+            categoria: foundProducts[i].categoria,
+            rating: foundProducts[i].rating,
+            descuento: foundProducts[i].descuento,
+            status: foundProducts[i].status,
+            tipo: foundProducts[i].tipo,
+            imagen: foundProducts[i].imagen
+          }
+          productsFilter.push(product);
+        }
+      }
     }
-  });
-  return foundProducts;
-}
-
-async getProductByFilter(datos){
-  console.log(datos)
-  const foundProducts = this.producRepository.find({
-    where:datos
-  })
-  return foundProducts
-}
-
+    if (datos.caballero === true && datos.dama === false) {
+      if (productsFilter.length === 0) {
+        return this.producRepository.find({
+          where: {
+            categoria: 'H'
+          },
+          relations: ['imagen']
+        })
+      }
+      for (let i = 0; i < productsFilter.length; i++) {
+        if (productsFilter[i].categoria === 'H') {
+          productsSend.push(productsFilter[i]);
+        }
+      }
+      return productsSend;
+    }
+    else if (datos.caballero === false && datos.dama === true) {
+      if (productsFilter.length === 0) {
+        return this.producRepository.find({
+          where: {
+            categoria: 'M'
+          },
+          relations: ['imagen']
+        })
+      }
+      for (let i = 0; i < productsFilter.length; i++) {
+        if (productsFilter[i].categoria === 'M') {
+          productsSend.push(productsFilter[i]);
+        }
+      }
+      return productsSend;
+    }
+    else {
+      return this.producRepository.find({
+        relations: ['imagen']
+      })
+    }
+  }
+  getProductsByGender(gender: string, tipo: string) {
+    return this.producRepository.find({
+      where: {
+        categoria: gender,
+        tipo: tipo
+      },
+      relations: ['imagen']
+    })
+  }
 }

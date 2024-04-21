@@ -2,6 +2,7 @@ import { Column, Entity,ManyToOne,OneToMany, PrimaryGeneratedColumn } from "type
 import { DetallesCarrito } from 'src/carrito/entities/detallesCarrito.entity'
 import { DetallesVenta } from "src/ventas/entities/detalles_venta.entity";
 import { Imagenes } from "./imagenes.entity";
+import { Comentarios } from "./comentatios.entity";
 
 @Entity('products')
 export class Product {
@@ -34,4 +35,7 @@ export class Product {
 
     @OneToMany(()=>Imagenes, imagenes => imagenes.producto)
     imagen:Imagenes[];
+
+    @OneToMany(()=>Comentarios,comentarios => comentarios.producto)
+    comentarios:Comentarios[];
 }
