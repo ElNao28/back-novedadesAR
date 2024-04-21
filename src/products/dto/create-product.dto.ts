@@ -4,6 +4,6 @@ export class CreateProductDto {
     descripccion: string;
     stock: number;
     categoria: string;
-    rating?: number;
     descuento: number;
+    tipo:string;
 }

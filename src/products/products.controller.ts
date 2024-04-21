@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ResDto } from './dto/res.dto';
 import { dataPayment } from './interfaces/dataPayment.interface';
 
@@ -9,11 +9,12 @@ import { dataPayment } from './interfaces/dataPayment.interface';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
-  @UseInterceptors(FileInterceptor('imagen'))
+  @UseInterceptors(
+    FileFieldsInterceptor([{name:'imagen',maxCount:4}])
+  )
   @Post()
-  create(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
-    console.log(createProductDto)
-    //return this.productsService.create(createProductDto, file);
+  uploadFile(@Body()data:CreateProductDto,@UploadedFiles() files: { imagen?: Express.Multer.File[]}) {
+    return this.productsService.create(data,files)
   }
 
   @Post('pago')

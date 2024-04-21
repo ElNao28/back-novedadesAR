@@ -14,6 +14,7 @@ import MercadoPagoConfig, { Preference, Payment } from 'mercadopago';
 import { VentasService } from 'src/ventas/ventas.service';
 import { User } from 'src/users/entities/user.entity';
 import { Items } from './entities/Items.interface';
+import { Imagenes } from './entities/imagenes.entity';
 // Configura la API key y secret key de Cloudinary
 cloudinary.v2.config({
   cloud_name: 'dy5jdb6tv',
@@ -24,42 +25,44 @@ cloudinary.v2.config({
 export class ProductsService {
   constructor(
     @InjectRepository(Product) private producRepository: Repository<Product>,
+    @InjectRepository(Imagenes) private imagenesRepository: Repository<Imagenes>,
     private ventasService: VentasService) { }
 
-  // async create(createProductDto: CreateProductDto, file: Express.Multer.File) {
+  async create(createProductDto: CreateProductDto, file: { imagen?: Express.Multer.File[] }) {
 
-  //   console.log(file);
+    try {
 
-  //   try {
+      const newProduct = this.producRepository.create(createProductDto);
+      const productSave = await this.producRepository.save(newProduct);
 
-  //     const {  ...data } = createProductDto
 
-  //     // Crea un archivo temporal con el buffer del archivo
-  //     const filePath = path.join(os.tmpdir(), file.originalname);
-  //     fs.writeFileSync(filePath, file.buffer);
+      for (let i = 0; i < file.imagen.length; i++) {
+        // Crea un archivo temporal con el buffer del archivo
+        const filePath = path.join(os.tmpdir(), file.imagen[i].originalname);
+        fs.writeFileSync(filePath, file.imagen[i].buffer);
+        // se sube la imagen a Cloudinary
+        const result = await cloudinary.v2.uploader.upload(filePath, {
+          folder: 'tu-carpeta',
+          resource_type: 'image'
+        });
+        // Elimina el archivo temporal después de subirlo a Cloudinary
+        fs.unlinkSync(filePath);
 
-  //     // se sube la imagen a Cloudinary
-  //     const result = await cloudinary.v2.uploader.upload(filePath, {
-  //       folder: 'tu-carpeta',
-  //       resource_type: 'image'
-  //     });
-
-  //     // Elimina el archivo temporal después de subirlo a Cloudinary
-  //     fs.unlinkSync(filePath);
-
-  //     console.log(result);
-  //     const newProduct = this.producRepository.create({
-  //       imagenn: result.secure_url,
-  //       ...data
-  //     });
-
-  //     return this.producRepository.save(newProduct);
-  //   } catch (error) 
-  //   {
-  //     console.error(error);
-  //     throw new HttpException('Error al subir la imagen a Cloudinary', HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
+        const newImagen = this.imagenesRepository.create({
+          url_imagen: result.secure_url,
+          producto: productSave
+        })
+        this.imagenesRepository.save(newImagen)
+      }
+      return {
+        message: "Producto creado exitosamente",
+        status: HttpStatus.OK
+      }
+    } catch (error) {
+      console.error(error);
+      throw new HttpException('Error al subir la imagen a Cloudinary', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   findAll() {
     return this.producRepository.find({
@@ -82,8 +85,8 @@ export class ProductsService {
       comentarios.push(
         {
           comentario: product.comentarios[i].comentario,
-          fecha:product.comentarios[i].fecha,
-          usuario:product.comentarios[i].usuario.name+" "+product.comentarios[i].usuario.lastname+" "+product.comentarios[i].usuario.motherLastname
+          fecha: product.comentarios[i].fecha,
+          usuario: product.comentarios[i].usuario.name + " " + product.comentarios[i].usuario.lastname + " " + product.comentarios[i].usuario.motherLastname
         }
       )
     }
@@ -98,7 +101,7 @@ export class ProductsService {
       status: product.status,
       tipo: product.tipo,
       imagen: product.imagen,
-      comentarios:comentarios
+      comentarios: comentarios
     };
   }
   async formPago(res: ResDto[]) {
