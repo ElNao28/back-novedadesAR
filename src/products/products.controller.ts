@@ -9,6 +9,33 @@ import { dataPayment } from './interfaces/dataPayment.interface';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
+  @Get('prueba-android')
+  prueba(){
+    return {
+      envios:[
+        {
+          id:1,
+          producto:"prueba",
+          estado_envio:"En transito"
+        },
+        {
+          id:2,
+          producto:"prueba 2",
+          estado_envio:"Salio de platon"
+        },
+        {
+          id:3,
+          producto:"prueba 4",
+          estado_envio:"En destino"
+        },
+        {
+          id:4,
+          producto:"prueba 5",
+          estado_envio:"LLego al destino"
+        }
+      ]
+    }
+  }
   @UseInterceptors(
     FileFieldsInterceptor([{name:'imagen',maxCount:4}])
   )
