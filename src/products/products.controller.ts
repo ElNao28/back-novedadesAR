@@ -36,6 +36,10 @@ export class ProductsController {
       ]
     }
   }
+  @Get('all-products-admin')
+  getAllProducts(){
+    return this.productsService.findAllProducts()
+  }
   @UseInterceptors(
     FileFieldsInterceptor([{name:'imagen',maxCount:4}])
   )

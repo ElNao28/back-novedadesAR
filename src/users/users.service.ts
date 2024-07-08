@@ -132,10 +132,19 @@ export class UsersService {
     });
     this.cardRepository.save(createCard)
   }
-  getUsers() {
-    const users = this.userRepository.find({
+  async getUsers() {
+    const users = await this.userRepository.find({
     });
-    return users;
+    const result = users.map(data => ({
+      id:data.id,
+      name:data.name,
+      lastname:data.lastname,
+      motherLastname:data.motherLastname,
+      gender:data.gender,
+      email:data.email,
+      cellphone:data.cellphone
+    }));
+    return result
   }
 
   getUser(email: string) {

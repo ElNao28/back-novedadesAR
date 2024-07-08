@@ -21,7 +21,6 @@ export class UsersController {
   findOne(@Param('email') email: string) {
     return this.usersService.getUser(email);
   }
-
   @Patch('password/:email')
   updatePassword(@Param('email') email: string, @Body() dataPassword: {password:string,ip:string,fecha:string}) {
     console.log(dataPassword)

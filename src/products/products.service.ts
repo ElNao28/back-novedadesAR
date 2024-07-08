@@ -73,6 +73,11 @@ export class ProductsService {
     },);
   }
 
+  findAllProducts(){
+    return this.producRepository.find({
+      relations:['imagen']
+    })
+  }
   async findOne(id: number) {
     let comentarios = [];
     const product = await this.producRepository.findOne({
@@ -93,6 +98,7 @@ export class ProductsService {
     return {
       id: product.id,
       nombre_producto: product.nombre_producto,
+      precio: product.precio,
       descripccion: product.descripccion,
       stock: product.stock,
       categoria: product.categoria,
@@ -137,7 +143,7 @@ export class ProductsService {
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
         },
-        notification_url: 'https://f7cd-200-68-186-17.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url: 'https://b7c2-187-249-108-43.ngrok-free.app/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
