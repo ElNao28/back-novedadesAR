@@ -9,6 +9,7 @@ import * as cloudinary from 'cloudinary';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+
 import { ResDto } from './dto/res.dto';
 import MercadoPagoConfig, { Preference, Payment } from 'mercadopago';
 import { VentasService } from 'src/ventas/ventas.service';
@@ -44,7 +45,7 @@ export class ProductsService {
         const result = await cloudinary.v2.uploader.upload(filePath, {
           folder: 'tu-carpeta',
           resource_type: 'image'
-        });
+        }); 
         // Elimina el archivo temporal después de subirlo a Cloudinary
         fs.unlinkSync(filePath);
 
@@ -63,7 +64,22 @@ export class ProductsService {
       throw new HttpException('Error al subir la imagen a Cloudinary', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
+  async updateProduct(updateProductDto:UpdateProductDto,id:number){
+    const foundProduct = await this.producRepository.findOne({
+      where:{
+        id
+      }
+    });
+    if(!foundProduct) return{
+      message: 'Producto no encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    await this.producRepository.update(id,updateProductDto)
+    return{
+      message:'Producto actualizado',
+      status:HttpStatus.OK
+    }
+  }
   findAll() {
     return this.producRepository.find({
       where: {
@@ -252,5 +268,34 @@ export class ProductsService {
       },
       relations: ['imagen']
     })
+  }
+  async alterStatusProduct(id:number,action:boolean){
+    const foundProduct = await this.producRepository.findOne({
+      where:{
+        id
+      }
+    });
+    if(!foundProduct)return{
+      message:'not found',
+      status:HttpStatus.NOT_FOUND
+    }
+    if(action === true){
+    if(foundProduct.stock <= 0) return{
+      message:'No hay stock suficiente',
+      status:HttpStatus.BAD_REQUEST
+    }
+     await this.producRepository.update(id,{
+      status:'activo'
+     });
+    }
+    else{
+      await this.producRepository.update(id,{
+        status:'inactivo'
+      });
+    }
+    return{
+      message:'Status actualizado',
+      status:HttpStatus.OK
+    }
   }
 }

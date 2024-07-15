@@ -4,6 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ResDto } from './dto/res.dto';
 import { dataPayment } from './interfaces/dataPayment.interface';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -83,5 +84,13 @@ export class ProductsController {
   @Get('gender/:gender/category/:tipo')
   getProductsByGender(@Param('gender')gender:string,@Param('tipo')tipo:string){
     return this.productsService.getProductsByGender(gender,tipo)
+  }
+  @Patch('change-status')
+  changeStatus(@Body()data:{id:string,action:boolean}){
+    return this.productsService.alterStatusProduct(+data.id,data.action)
+  }
+  @Patch('update-product/:id')
+  updateProduct(@Param('id')id:string,@Body()data:UpdateProductDto){
+    return this.productsService.updateProduct(data,+id)
   }
 }
