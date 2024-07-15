@@ -298,4 +298,24 @@ export class ProductsService {
       status:HttpStatus.OK
     }
   }
+  async getProductsByDescuento(){
+    let productsWithDes = [];
+    const products = await this.producRepository.find({
+      where:{
+        status:'activo'
+      },
+      relations:['imagen']
+    });
+    products.forEach(product => {
+      if(product.descuento >0){
+        productsWithDes.push(product)
+      }
+    });
+
+    return{
+      message:'exito',
+      status:HttpStatus.OK,
+      data:productsWithDes
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ResDto } from './dto/res.dto';
 import { dataPayment } from './interfaces/dataPayment.interface';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -10,6 +10,10 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
+  @Get('get-promociones')
+  getProductsByDescuento(){
+    return this.productsService.getProductsByDescuento();
+  }
   @Get('prueba-android')
   prueba(){
     return {
