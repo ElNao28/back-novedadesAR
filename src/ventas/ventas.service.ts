@@ -7,6 +7,7 @@ import { Product } from 'src/products/entities/product.entity';
 import { DetallesVenta } from './entities/detalles_venta.entity';
 import { Items } from 'src/products/entities/Items.interface';
 import { Carrito } from 'src/carrito/entities/carrito.entity';
+import { Envios } from './entities/envios.entity';
 
 @Injectable()
 export class VentasService {
@@ -16,6 +17,7 @@ export class VentasService {
         @InjectRepository(Product) private productRepository: Repository<Product>,
         @InjectRepository(DetallesVenta) private detallesVenta: Repository<DetallesVenta>,
         @InjectRepository(Carrito) private carritoRepository: Repository<Carrito>,
+        @InjectRepository(Envios) private enviosRepository: Repository<Envios>,
     ) { }
     async addVenta(idUser: number, products: Items[], idCard: string, total: number, fecha: string) {
         console.log(total)
@@ -70,21 +72,59 @@ export class VentasService {
         })
         this.carritoRepository.save(newCard)
     }
-    async getVentas(idUser:number) {
+    async getVentas(idUser: number) {
         const foundUser = await this.userRepository.findOne({
             where: {
                 id: idUser
             }
         });
         const detallesVenta = await this.ventaRepository.find({
-            where:{
-                usuario:foundUser
+            where: {
+                usuario: foundUser
             },
-            relations:['detallesVenta','detallesVenta.producto']
+            relations: ['detallesVenta', 'detallesVenta.producto']
         });
+        return {
+            status: HttpStatus.OK,
+            detallesVenta: detallesVenta
+        }
+    }
+    async getAllVentasByStatus(estado: string) {
+        const ventas = await this.ventaRepository.find({
+            where: {
+                estado
+            },
+            relations: ['detallesVenta', 'detallesVenta.producto', 'envio']
+        });
+        return {
+            message: 'exito',
+            status: HttpStatus.OK,
+            data: ventas
+        }
+    }
+    async addCodeRastreo(id: number, code: number) {
+        const foundVenta = await this.ventaRepository.findOne({
+            where: {
+                id
+            }
+        });
+        if (!foundVenta) return{
+            message: 'La venta no existe',
+            status: HttpStatus.NOT_FOUND
+        }
+        const newEnvio = await this.enviosRepository.create({
+            numero_guia:code
+        });
+        const saveEnvio = await this.enviosRepository.save(newEnvio);
+
+        await this.ventaRepository.update(id,{
+            envio:saveEnvio,
+            estado:'proceso'
+        })
+
         return{
-            status:HttpStatus.OK,
-            detallesVenta:detallesVenta
+            message:'exito',
+            status:HttpStatus.OK
         }
     }
 }
