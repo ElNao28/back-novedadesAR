@@ -92,9 +92,9 @@ export class VentasService {
     async getAllVentasByStatus(estado: string) {
         const ventas = await this.ventaRepository.find({
             where: {
-                estado
+                estado 
             },
-            relations: ['detallesVenta', 'detallesVenta.producto', 'envio']
+            relations: ['detallesVenta', 'detallesVenta.producto', 'envio','usuario','usuario.ubicacion']
         });
         return {
             message: 'exito',
