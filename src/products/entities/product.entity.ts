@@ -2,6 +2,7 @@ import { Column, Entity,ManyToOne,OneToMany, PrimaryGeneratedColumn } from "type
 import { DetallesCarrito } from 'src/carrito/entities/detallesCarrito.entity'
 import { DetallesVenta } from "src/ventas/entities/detalles_venta.entity";
 import { Imagenes } from "./imagenes.entity";
+import { Comentarios } from "./comentatios.entity";
 
 @Entity('products')
 export class Product {
@@ -23,6 +24,8 @@ export class Product {
     descuento: number;
     @Column({default:'activo'})
     status:string;
+    @Column()
+    tipo:string
 
     @OneToMany(()=>DetallesCarrito, detalleCarrito => detalleCarrito.product)
     dellatesCarrito:DetallesCarrito;
@@ -30,6 +33,9 @@ export class Product {
     @OneToMany(()=>DetallesVenta, detallesVenta => detallesVenta.producto)
     detalleVenta:DetallesVenta;
 
-    @OneToMany(()=>Imagenes, imagenes => imagenes)
-    imagen:Imagenes[]
+    @OneToMany(()=>Imagenes, imagenes => imagenes.producto)
+    imagen:Imagenes[];
+
+    @OneToMany(()=>Comentarios,comentarios => comentarios.producto)
+    comentarios:Comentarios[];
 }

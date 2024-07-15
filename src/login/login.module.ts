@@ -6,10 +6,11 @@ import { User } from 'src/users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { Intentos } from 'src/users/entities/intentos.entity';
+import { Logs } from 'src/users/entities/logs.entity';
 
 @Module({
   imports:[
-    TypeOrmModule.forFeature([User,Intentos]),
+    TypeOrmModule.forFeature([User,Intentos,Logs]),
     UsersModule,
     JwtModule.register({
       global: true,
@@ -19,5 +20,6 @@ import { Intentos } from 'src/users/entities/intentos.entity';
   ],
   controllers: [LoginController],
   providers: [LoginService],
+  exports:[LoginService]
 })
 export class LoginModule {}

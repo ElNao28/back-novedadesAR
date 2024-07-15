@@ -54,5 +54,9 @@ export class EmailService {
 
         return codigo;
     }
+
+    sendEmailCodeEmail(){
+      
+    }
 }
 

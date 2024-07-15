@@ -12,4 +12,6 @@ export class Ubicacion{
     cp:number;
     @Column()
     colonia:string;
+    @Column()
+    referencia:string;
 }

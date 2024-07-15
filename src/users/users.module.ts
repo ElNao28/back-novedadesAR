@@ -8,11 +8,12 @@ import { Logs } from './entities/logs.entity';
 import { Question } from './entities/question.entity';
 import { Rol } from './entities/rol.entity';
 import { Ubicacion } from './entities/ubicacion.entity';
+import { Carrito } from 'src/carrito/entities/carrito.entity'
 
 @Module({
   imports:[TypeOrmModule.forFeature([
-    User,Intentos, Logs, Question,Rol,Ubicacion
-  ])],
+    User,Intentos, Logs, Question,Rol,Ubicacion,Carrito
+  ]),],
   controllers: [UsersController],
   providers: [UsersService],
   exports:[UsersService] 

@@ -10,8 +10,8 @@ export class Venta {
     @Column()
     total_venta:number;
 
-    @Column({type: 'date'})
-    fecha_venta:Date;
+    @Column({type: 'date', nullable: true})
+    fecha_venta:Date | null;
 
     @OneToMany(()=>DetallesVenta, detallesVenta => detallesVenta.venta )
     detallesVenta: DetallesVenta[];

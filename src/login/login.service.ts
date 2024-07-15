@@ -7,6 +7,7 @@ import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Intentos } from 'src/users/entities/intentos.entity';
+import { Logs } from 'src/users/entities/logs.entity';
 
 @Injectable()
 export class LoginService {
@@ -14,6 +15,7 @@ export class LoginService {
   constructor(
       @InjectRepository(User) private userRepository:Repository<User>,
       @InjectRepository(Intentos) private intentosRepository:Repository<Intentos>,
+      @InjectRepository(Logs) private logsRepository: Repository<Logs>,
       private userService:UsersService,
       private jwtService: JwtService
     ){}
@@ -22,9 +24,8 @@ export class LoginService {
 
       const data = this.userService.getUser(createLoginDto.email)
       const payload = { sub: (await data).id, username: (await data).name };
-      const tocken =  this.jwtService.sign(payload)
-      const res = this.jwtService.decode(tocken)
-      console.log(res);
+      const tocken =  this.jwtService.sign(payload);
+      const res = this.jwtService.decode(tocken);
 
       if(await bcryptjs.compare(createLoginDto.password, (await data).password))
         return{
@@ -48,18 +49,37 @@ export class LoginService {
     this.intentosRepository.update(dataUser.intentos.id,{
       intentos: intento
     })
-    // this.userRepository.query(
-    //   "UPDATE users SET intentos = "+intento+" WHERE id = "+id+""
-    // )
   }
 
-  resetearIntentos(id:number){
+  async resetearIntentos(id:number){
+    const dataUser = await this.userRepository.findOne({
+      where:{
+        id:id
+      },
+      relations:['intentos']
+    });
     console.log("conteo iniciado")
     setTimeout(()=>{
-      this.userRepository.query(
-        "UPDATE users SET intentos = 0 WHERE id = "+id+""
-      )
+      this.intentosRepository.update(dataUser.intentos.id,{
+        intentos:0
+      })
       console.log("Intentos reseteados")
     },10000)
   }
-}
+  async createlogs(data:{idUser:number,accion:string,ip:string,url:string,status:number,fecha:string}){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:data.idUser
+      }
+    });
+    const newLog = this.logsRepository.create({
+     accion:data.accion,
+     ip:data.ip,
+     url_solicitada:data.url,
+     status:data.status,
+     usuario:foundUser,
+     fecha:data.fecha
+    });
+    this.logsRepository.save(newLog);
+  }
+} 
