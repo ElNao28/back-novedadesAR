@@ -20,4 +20,9 @@ export class CarritoController {
   changeCantidad(@Body()data:{id:number,cantidad:number}){
     return this.carritoService.changeCantidad(data);
   }
+  @Post('add-alexa')
+  addProductByAlexa(@Body()data:{nameProduct:string,idUser:number}){
+    console.log(data);
+    return this.carritoService.addProductToCardByAlexa({nameProduct:data.nameProduct,idUser:data.idUser,cantidad:1});
+  }
 }

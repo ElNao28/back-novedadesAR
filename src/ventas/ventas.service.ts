@@ -127,4 +127,10 @@ export class VentasService {
             status:HttpStatus.OK
         }
     }
+    async dataByDataSet(){
+        const foundDetalles = await this.detallesVenta.find({
+            relations:['producto','venta']
+        });
+        return foundDetalles
+    }
 }

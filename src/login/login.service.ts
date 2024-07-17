@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ValidLoginDto } from './dto/valid-login.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcryptjs from 'bcryptjs';
@@ -81,5 +81,24 @@ export class LoginService {
      fecha:data.fecha
     });
     this.logsRepository.save(newLog);
+  }
+  async loginAlexa(codeAlexa:string){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        codeAlexa
+      }
+    });
+    if(!foundUser)return{
+      message:'no encontrado',
+      status:HttpStatus.NOT_FOUND
+    }
+    return{
+      message:'Exito',
+      status:HttpStatus.OK,
+      data:{
+        id:foundUser.id,
+        nombre:foundUser.name + " " + foundUser.lastname + " " + foundUser.motherLastname
+      }
+    }
   }
 } 
