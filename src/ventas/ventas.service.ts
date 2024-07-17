@@ -131,6 +131,21 @@ export class VentasService {
         const foundDetalles = await this.detallesVenta.find({
             relations:['producto','venta']
         });
-        return foundDetalles
+
+        const filterByDataSet = foundDetalles.map((data) =>{
+            return{
+                id:data.id,
+                producto:data.producto.nombre_producto,
+                descuento:data.descuento,
+                precio:data.precio,
+                stock:data.producto.stock,
+                categoria:data.producto.categoria,
+                tipo:data.producto.tipo,
+                rating:data.producto.rating,
+                fecha_venta:data.venta.fecha_venta,
+                cantidad:data.cantidad
+            }
+        })
+        return filterByDataSet
     }
 }
