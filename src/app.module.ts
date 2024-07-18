@@ -15,11 +15,11 @@ import { VentasModule } from './ventas/ventas.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'monorail.proxy.rlwy.net',//roundhouse.proxy.rlwy.net localhost
-      port: 32140,//23516 3306
+      host: 'localhost',//localhost monorail.proxy.rlwy.net
+      port: 3306,//3306 32140
       username: 'root',
-      password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//3CfeBhE43BA4CghG1G5HgDhh62D5GHdF
-      database: 'railway',//railway db_novedadesar
+      password: '',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
+      database: 'db_novedadesar',//railway db_novedadesar
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),

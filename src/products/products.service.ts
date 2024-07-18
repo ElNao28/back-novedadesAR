@@ -13,7 +13,6 @@ import * as path from 'path';
 import { ResDto } from './dto/res.dto';
 import MercadoPagoConfig, { Preference, Payment } from 'mercadopago';
 import { VentasService } from 'src/ventas/ventas.service';
-import { User } from 'src/users/entities/user.entity';
 import { Items } from './entities/Items.interface';
 import { Imagenes } from './entities/imagenes.entity';
 // Configura la API key y secret key de Cloudinary
@@ -85,10 +84,72 @@ export class ProductsService {
       where: {
         status: "activo"
       },
+      order:{
+        id:'DESC'
+      },
       relations: ['imagen']
     },);
   }
+  async findNovedades() {
+    let productsWithDes = [];
+    const nuevo = await this.producRepository.find({
+      where: {
+        status: "activo"
+      },
+      order:{
+        id:'DESC'
+      },
+      take:9,
+      relations: ['imagen']
+    });
+    const descuento = await this.producRepository.find({
+      where:{
+        status:'activo'
+      },
+      relations:['imagen']
+    });
+    descuento.forEach(product => {
+      if(productsWithDes.length >= 9){
+        return productsWithDes
+      }
+      if(product.descuento >0){
+        productsWithDes.push(product)
+      }
+    });
 
+    const dama = await this.producRepository.find({
+      where:{
+        status:'activo',
+        categoria:'M'
+      },
+      order:{
+        id:'DESC'
+      },
+      take:9,
+      relations:['imagen']
+    });
+    const caballero = await this.producRepository.find({
+      where:{
+        status:'activo',
+        categoria:'H',
+      },
+      order:{
+        id:'DESC'
+      },
+      take:9,
+      relations:['imagen']
+    });
+
+    return{
+      message:'exito',
+      status:HttpStatus.OK,
+      novedades:nuevo,
+      descuento:productsWithDes,
+      dama:dama,
+      caballero:caballero
+    }
+
+  }
   findAllProducts(){
     return this.producRepository.find({
       relations:['imagen']

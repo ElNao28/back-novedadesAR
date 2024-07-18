@@ -61,7 +61,10 @@ export class ProductsController {
   findAll() {
     return this.productsService.findAll();
   }
-
+  @Get('data-inicio')
+  findNovedades() {
+    return this.productsService.findNovedades();
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
