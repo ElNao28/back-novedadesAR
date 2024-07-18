@@ -86,7 +86,7 @@ export class VentasService {
             order:{
                 fecha_venta: 'DESC'
             },
-            relations: ['detallesVenta', 'detallesVenta.producto']
+            relations: ['detallesVenta', 'detallesVenta.producto','envio'] 
         });
         return {
             status: HttpStatus.OK,
@@ -120,7 +120,7 @@ export class VentasService {
             status: HttpStatus.NOT_FOUND
         }
         const newEnvio = await this.enviosRepository.create({
-            numero_guia:code
+            numero_guia:code.toString()
         });
         const saveEnvio = await this.enviosRepository.save(newEnvio);
 
