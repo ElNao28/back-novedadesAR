@@ -69,6 +69,7 @@ export class ProductsController {
 
   @Post('res-pago/:id/card/:idcard')
   async resPago(@Body() data: dataPayment, @Param('id') idUser: string,@Param('idcard')idCard:string) {
+    console.log(data, idUser,idCard);
     if (data && data.data && data.data.id) {
       const idPayment = data.data.id;
       return this.productsService.checkPayment(parseInt(idPayment), idUser,idCard);

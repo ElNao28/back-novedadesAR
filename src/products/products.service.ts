@@ -159,7 +159,7 @@ export class ProductsService {
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
         },
-        notification_url: 'https://back-novedadesar-production.up.railway.app/res-pago' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url: 'https://back-novedadesar-production.up.railway.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
