@@ -31,7 +31,8 @@ export class User {
     password:string;
     @Column()
     answer:string;
-
+    @Column()
+    codeAlexa:string;
 
     @ManyToOne(()=>Question, question => question.users)
     question:Question;

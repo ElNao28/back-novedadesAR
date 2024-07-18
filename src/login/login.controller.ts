@@ -89,4 +89,10 @@ export class LoginController {
       }
     }
   }
+
+  @Get('login-alexa/:code')
+  loginAlexa(@Param('code')code:string){
+    console.log(code)
+    return this.loginService.loginAlexa(code)
+  }
 }

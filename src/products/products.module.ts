@@ -10,9 +10,9 @@ import { DetallesVenta } from 'src/ventas/entities/detalles_venta.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Carrito } from 'src/carrito/entities/carrito.entity';
 import { Comentarios } from './entities/comentatios.entity';
-
+import { Envios } from 'src/ventas/entities/envios.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Product, Imagenes,Venta,User,DetallesVenta,Carrito,Comentarios])],
+  imports: [TypeOrmModule.forFeature([Product, Imagenes,Venta,User,DetallesVenta,Carrito,Comentarios,Envios])],
   controllers: [ProductsController],
   providers: [ProductsService,VentasService],
 })

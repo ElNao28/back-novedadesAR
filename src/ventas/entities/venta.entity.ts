@@ -13,6 +13,9 @@ export class Venta {
     @Column({type: 'date', nullable: true})
     fecha_venta:Date | null;
 
+    @Column({default:'Fenvio'})
+    estado:string;
+
     @OneToMany(()=>DetallesVenta, detallesVenta => detallesVenta.venta )
     detallesVenta: DetallesVenta[];
 
