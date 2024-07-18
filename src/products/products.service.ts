@@ -159,6 +159,7 @@ export class ProductsService {
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
         },
+        //https://back-novedadesar-production.up.railway.app https://8831-187-249-108-43.ngrok-free.app 
         notification_url: 'https://back-novedadesar-production.up.railway.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
@@ -178,7 +179,6 @@ export class ProductsService {
     });
     if (data) {
       const pago = await new Payment(client).capture({ id: data });
-      console.log(pago)
       if (pago.status === 'approved') {
         this.ventasService.addVenta(parseInt(idUser), pago.additional_info.items, idCard, pago.transaction_details.total_paid_amount, pago.date_approved);
       }

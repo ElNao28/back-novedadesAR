@@ -20,7 +20,7 @@ export class VentasService {
         @InjectRepository(Envios) private enviosRepository: Repository<Envios>,
     ) { }
     async addVenta(idUser: number, products: Items[], idCard: string, total: number, fecha: string) {
-        console.log(total)
+        console.log("llega aqui ",total)
         const foundUser = await this.userRepository.findOne({
             where: {
                 id: idUser,
@@ -43,7 +43,8 @@ export class VentasService {
                 cantidad: products[i].quantity,
                 precio: products[i].unit_price,
                 producto: foundProduct,
-                venta: saveVenta
+                venta: saveVenta,
+                descuento: foundProduct.descuento
             });
             const saveDetallesVenta = this.detallesVenta.save(newDetallesVenta);
             const newStock = foundProduct.stock - products[i].quantity;
@@ -82,6 +83,9 @@ export class VentasService {
             where: {
                 usuario: foundUser
             },
+            order:{
+                fecha_venta: 'DESC'
+            },
             relations: ['detallesVenta', 'detallesVenta.producto']
         });
         return {
@@ -93,6 +97,9 @@ export class VentasService {
         const ventas = await this.ventaRepository.find({
             where: {
                 estado 
+            },
+            order:{
+                fecha_venta:'DESC'
             },
             relations: ['detallesVenta', 'detallesVenta.producto', 'envio','usuario','usuario.ubicacion']
         });
