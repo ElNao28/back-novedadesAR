@@ -155,11 +155,11 @@ export class ProductsService {
         },
         items: products,
         back_urls: {
-          success: 'http://localhost:4200/inicio',
+          success: 'https://novedades-ar.netlify.app/#/inicio',
           failure: 'http://localhost:3000/failure',
           pending: 'http://localhost:3000/pending'
         },
-        notification_url: 'https://b7c2-187-249-108-43.ngrok-free.app/' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url: 'https://back-novedadesar-production.up.railway.app/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
