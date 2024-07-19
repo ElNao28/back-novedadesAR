@@ -22,5 +22,9 @@ export class VentasController {
   addCodeRastreo(@Param('id') id: string, @Body() codigoRastreo: {code:number}){
     return this.ventasService.addCodeRastreo(+id, codigoRastreo.code);
   }
+  @Post('add-raking')
+  addRaking(@Body()data:{idVenta:number,raking:number,opinion:string}){
+    return this.ventasService.addRaking(data.idVenta,data.raking,data.opinion)
+  }
   
 }
