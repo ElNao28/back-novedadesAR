@@ -86,7 +86,7 @@ export class VentasService {
             order:{
                 fecha_venta: 'DESC'
             },
-            relations: ['detallesVenta', 'detallesVenta.producto','envio'] 
+            relations: ['detallesVenta', 'detallesVenta.producto','detallesVenta.producto.imagen','envio'] 
         });
         return {
             status: HttpStatus.OK,
