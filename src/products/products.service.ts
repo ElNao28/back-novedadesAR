@@ -393,7 +393,8 @@ export class ProductsService {
     const foundComentarios = await this.comentariosRepository.find({
       where:{
         usuario:foundUser
-      }
+      },
+      relations:['usuario','usuario.']
     });
   }
 }
