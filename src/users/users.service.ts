@@ -136,13 +136,13 @@ export class UsersService {
     const users = await this.userRepository.find({
     });
     const result = users.map(data => ({
-      id:data.id,
-      name:data.name,
-      lastname:data.lastname,
-      motherLastname:data.motherLastname,
-      gender:data.gender,
-      email:data.email,
-      cellphone:data.cellphone
+      id: data.id,
+      name: data.name,
+      lastname: data.lastname,
+      motherLastname: data.motherLastname,
+      gender: data.gender,
+      email: data.email,
+      cellphone: data.cellphone
     }));
     return result
   }
@@ -175,11 +175,11 @@ export class UsersService {
         password: bcryptjs.hashSync(password, 10)
       });
       this.createlogs({
-        idUser: dataUser.id, 
-        accion: 'Actualizacion de contraseña', 
-        ip: updateData.ip, 
-        url: 'users/password/:email', 
-        status: 202, 
+        idUser: dataUser.id,
+        accion: 'Actualizacion de contraseña',
+        ip: updateData.ip,
+        url: 'users/password/:email',
+        status: 202,
         fecha: updateData.fecha
       })
       return {
@@ -338,5 +338,22 @@ export class UsersService {
       fecha: data.fecha
     });
     this.logsRepository.save(newLog);
+  }
+
+  async checkUbicacion(id: number) {
+    const foundUser = await this.userRepository.findOne({
+      where: {
+        id
+      },
+      relations: ['ubicacion']
+    });
+    if (foundUser.ubicacion.estado === '') return {
+      message: 'no cuenta con una ubicacion',
+      status: HttpStatus.NOT_FOUND
+    }
+    return {
+      message: 'Cuenta con unbicacion',
+      status: HttpStatus.OK
+    }
   }
 }

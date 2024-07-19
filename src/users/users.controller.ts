@@ -16,6 +16,10 @@ export class UsersController {
   findAll() {
     return this.usersService.getUsers();
   }
+  @Get('isubicacion/:id')
+  checkUbicacion(@Param('id')idUser:string) {
+    return this.usersService.checkUbicacion(+idUser);
+  }
 
   @Get(':email')
   findOne(@Param('email') email: string) {

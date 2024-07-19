@@ -15,7 +15,10 @@ export class DetallesVenta {
 
     @Column()
     precio:number;
-        
+    
+    @Column({nullable:true})
+    calificacion:number;
+
     @ManyToOne(()=> Venta, venta => venta.detallesVenta)
     venta:Venta;
     
