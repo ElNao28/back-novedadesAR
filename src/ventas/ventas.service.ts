@@ -86,7 +86,8 @@ export class VentasService {
                 usuario: foundUser
             },
             order: {
-                fecha_venta: 'DESC'
+                fecha_venta: 'DESC',
+                id:'DESC'
             },
             relations: ['detallesVenta', 'detallesVenta.producto', 'detallesVenta.producto.imagen', 'envio']
         });
@@ -181,9 +182,11 @@ export class VentasService {
             usuario: foundUser,
             fecha: fecha
         });
-        await this.comentarioRepository.save(newComent);
+        const saveComent = await this.comentarioRepository.save(newComent);
+
         await this.detallesVenta.update(idVenta, {
-            calificacion: raking
+            calificacion: raking,
+            comentario:saveComent
         });
 
         const foundVentas = await this.detallesVenta.find({
@@ -209,6 +212,58 @@ export class VentasService {
         return {
             message: 'exito',
             status: HttpStatus.OK
+        }
+    }
+    async getComentariosByid(idUser:number){
+        const foundUser = await this.userRepository.findOne({
+            where:{
+                id:idUser
+            },
+            relations:['ventas','ventas.detallesVenta','ventas.detallesVenta.producto','ventas.detallesVenta.producto.imagen','ventas.detallesVenta.comentario']
+        });
+        let detallesVenta = [];
+
+        foundUser.ventas.forEach(data =>{
+            data.detallesVenta.forEach(dataVen =>{
+                if(dataVen.comentario)
+                    detallesVenta.push(dataVen)
+            })
+        });
+        detallesVenta = detallesVenta.map(data =>{
+            return{
+                producto:data.producto.nombre_producto,
+                precio:data.precio,
+                cantidad:data.cantidad,
+                calificacion:data.calificacion,
+                comentario:data.comentario,
+                imagen_url:data.producto.imagen[0].url_imagen
+            }
+        });
+        console.log(detallesVenta)
+        return{
+            message:'exito',
+            status:HttpStatus.OK,
+            data:detallesVenta
+        }
+    }
+    async ventaComplete(data:{idEnvio:number,fecha:Date,idVenta:number}){
+        const foundEnvio = await this.enviosRepository.findOne({
+            where:{
+                id:data.idEnvio
+            }
+        });
+        const foundVenta = await this.ventaRepository.findOne({
+            where:{
+                id:data.idVenta
+            }
+        });
+        foundVenta.estado = 'completo';
+        foundEnvio.fecha_entrega = data.fecha;  
+        await this.enviosRepository.update(foundEnvio.id, foundEnvio)
+        await this.ventaRepository.update(foundVenta.id, foundVenta)
+        return {
+            message:'Exito',
+            status:HttpStatus.OK
         }
     }
 }

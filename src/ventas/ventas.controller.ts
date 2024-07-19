@@ -6,6 +6,12 @@ import { UpdateVentaDto } from './dto/update-venta.dto';
 @Controller('ventas')
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
+
+  @Get('get-comentarios/:id')
+  getComentarios(@Param('id')idUser:string){
+    return this.ventasService.getComentariosByid(+idUser)
+  }
+
   @Get('dataset')
   getDataSet(){
     return this.ventasService.dataByDataSet();
@@ -26,5 +32,8 @@ export class VentasController {
   addRaking(@Body()data:{idVenta:number,raking:number,opinion:string}){
     return this.ventasService.addRaking(data.idVenta,data.raking,data.opinion)
   }
-  
+  @Post('venta-complete')
+  ventaComplete(@Body()data:{idEnvio:number,fecha:Date,idVenta:number}){
+    return this.ventasService.ventaComplete(data);
+  }
 }

@@ -10,6 +10,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
+
   @Get('get-promociones')
   getProductsByDescuento(){
     return this.productsService.getProductsByDescuento();

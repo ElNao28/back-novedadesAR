@@ -226,7 +226,7 @@ export class ProductsService {
           pending: 'http://localhost:3000/pending'
         },
         //https://back-novedadesar-production.up.railway.app https://8831-187-249-108-43.ngrok-free.app 
-        notification_url: 'https://back-novedadesar-production.up.railway.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url: 'https://711d-189-240-192-130.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
