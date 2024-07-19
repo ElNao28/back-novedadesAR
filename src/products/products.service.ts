@@ -15,6 +15,9 @@ import MercadoPagoConfig, { Preference, Payment } from 'mercadopago';
 import { VentasService } from 'src/ventas/ventas.service';
 import { Items } from './entities/Items.interface';
 import { Imagenes } from './entities/imagenes.entity';
+import { Comentarios } from './entities/comentatios.entity';
+import { User } from 'src/users/entities/user.entity';
+
 // Configura la API key y secret key de Cloudinary
 cloudinary.v2.config({
   cloud_name: 'dy5jdb6tv',
@@ -26,6 +29,8 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product) private producRepository: Repository<Product>,
     @InjectRepository(Imagenes) private imagenesRepository: Repository<Imagenes>,
+    @InjectRepository(Comentarios) private comentariosRepository: Repository<Comentarios>,
+    @InjectRepository(User) private userRepository:Repository<User>,
     private ventasService: VentasService) { }
 
   async create(createProductDto: CreateProductDto, file: { imagen?: Express.Multer.File[] }) {
@@ -378,5 +383,17 @@ export class ProductsService {
       status:HttpStatus.OK,
       data:productsWithDes
     }
+  }
+  async getComentariosByid(idUser:number){
+    const foundUser = await this.userRepository.findOne({
+      where:{
+        id:idUser
+      }
+    });
+    const foundComentarios = await this.comentariosRepository.find({
+      where:{
+        usuario:foundUser
+      }
+    });
   }
 }
