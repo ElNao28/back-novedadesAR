@@ -261,17 +261,35 @@ export class UsersService {
       birthdate: foundUser.birthdate
     }
   }
-  updateUserById(id: number, data: CreateUserDto) {
+  async updateUserById(id: number, data: CreateUserDto) {
     const { password, ...dataUser } = data;
     if (password) {
-      console.log("pass")
       this.userRepository.update(id, {
         password: bcryptjs.hashSync(password, 10),
         ...dataUser
       });
     }
     else {
-      console.log("entra aqui")
+      if (data.email) {
+        const foundEmail = await this.userRepository.findOne({
+          where: {
+            email: data.email
+          }
+        });
+        if (foundEmail && foundEmail.id !== id) return {
+          status: HttpStatus.CONFLICT,
+          message: 'Conflicto'
+        }
+        const foundNumber = await this.userRepository.findOne({
+          where: {
+            cellphone: data.cellphone
+          }
+        });
+        if (foundNumber && foundNumber.id !== id) return {
+          status: HttpStatus.CONFLICT,
+          message: 'Conflicto'
+        }
+      }
       this.userRepository.update(id, data)
     }
 

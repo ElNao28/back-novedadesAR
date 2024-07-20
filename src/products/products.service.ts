@@ -226,14 +226,14 @@ export class ProductsService {
           pending: 'http://localhost:3000/pending'
         },
         //https://back-novedadesar-production.up.railway.app https://8831-187-249-108-43.ngrok-free.app 
-        notification_url: 'https://711d-189-240-192-130.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url:'https://cc5d-187-249-108-44.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
         url = res.sandbox_init_point;
       })
       .catch(err => {
-        console.log(err)
+        console.log(err,'error')
       });
     return {
       url: url
@@ -289,14 +289,6 @@ export class ProductsService {
       }
     }
     if (datos.caballero === true && datos.dama === false) {
-      if (productsFilter.length === 0) {
-        return this.producRepository.find({
-          where: {
-            categoria: 'H'
-          },
-          relations: ['imagen']
-        })
-      }
       for (let i = 0; i < productsFilter.length; i++) {
         if (productsFilter[i].categoria === 'H') {
           productsSend.push(productsFilter[i]);
@@ -305,14 +297,6 @@ export class ProductsService {
       return productsSend;
     }
     else if (datos.caballero === false && datos.dama === true) {
-      if (productsFilter.length === 0) {
-        return this.producRepository.find({
-          where: {
-            categoria: 'M'
-          },
-          relations: ['imagen']
-        })
-      }
       for (let i = 0; i < productsFilter.length; i++) {
         if (productsFilter[i].categoria === 'M') {
           productsSend.push(productsFilter[i]);
@@ -321,9 +305,8 @@ export class ProductsService {
       return productsSend;
     }
     else {
-      return this.producRepository.find({
-        relations: ['imagen']
-      })
+      productsSend = productsFilter;
+      return productsSend
     }
   }
   getProductsByGender(gender: string, tipo: string) {
@@ -383,18 +366,5 @@ export class ProductsService {
       status:HttpStatus.OK,
       data:productsWithDes
     }
-  }
-  async getComentariosByid(idUser:number){
-    const foundUser = await this.userRepository.findOne({
-      where:{
-        id:idUser
-      }
-    });
-    const foundComentarios = await this.comentariosRepository.find({
-      where:{
-        usuario:foundUser
-      },
-      relations:['usuario','usuario.']
-    });
   }
 }

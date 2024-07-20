@@ -86,7 +86,6 @@ export class ProductsController {
   }
   @Post('filter')
   getProductsByFilter(@Body()datos){
-    console.log(datos)
     return this.productsService.getProductByFilter(datos)
   }
   @Get('gender/:gender/category/:tipo')
