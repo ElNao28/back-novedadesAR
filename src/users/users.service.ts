@@ -292,8 +292,8 @@ export class UsersService {
       }
       this.userRepository.update(id, data)
     }
-
-
+    console.log(data)
+    this.userRepository.update(id, data)
     return {
       status: HttpStatus.OK,
       message: 'Datos actualizados correctamente'
