@@ -137,11 +137,26 @@ export class VentasService {
         const foundVenta = await this.ventaRepository.findOne({
             where: {
                 idSession
-            }
+            },
+            relations:['detallesVenta','detallesVenta.producto']
         });
         this.ventaRepository.update(foundVenta.id, {
             estado: 'Fenvio'
         })
+        for(let i = 0; i < foundVenta.detallesVenta.length;i++){
+            let newStock = 0;
+            const foundProduct = await this.productRepository.findOne({
+                where: {
+                    id: foundVenta.detallesVenta[i].producto.id
+                }
+            });
+            newStock = foundProduct.stock - foundVenta.detallesVenta[i].cantidad;
+            this.productRepository.update({
+                id: foundVenta.detallesVenta[i].producto.id
+            }, {
+                stock: newStock
+            });
+        }
         if(foundVenta.idCarrito === 'null'){
             return
         }
@@ -319,7 +334,6 @@ export class VentasService {
                 imagen_url: data.producto.imagen[0].url_imagen
             }
         });
-        console.log(detallesVenta)
         return {
             message: 'exito',
             status: HttpStatus.OK,
