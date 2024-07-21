@@ -127,9 +127,9 @@ export class VentasService {
                 console.log("no borra")
                 return
             }
-            foundVenta.detallesVenta.forEach(async data => {
-                this.detallesVenta.delete(data.id)
-            });
+            for(let i = 0; i <foundVenta.detallesVenta.length;i++){
+                await this.detallesVenta.delete(foundVenta.detallesVenta[i].id)
+            }
             await this.ventaRepository.delete(foundVenta.id)
         }, 1800000);//1800000
     }
