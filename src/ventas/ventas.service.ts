@@ -22,7 +22,8 @@ export class VentasService {
         @InjectRepository(Comentarios) private comentarioRepository: Repository<Comentarios>,
     ) { }
     async addVenta(idUser: number, products: Items[], idCard: string, total: number, fecha: string) {
-        console.log("llega aqui ", total)
+        console.log(idUser, products, idCard, total, fecha)
+        return
         const foundUser = await this.userRepository.findOne({
             where: {
                 id: idUser,
@@ -75,6 +76,85 @@ export class VentasService {
         })
         this.carritoRepository.save(newCard)
     }
+    async addVentaStripe(
+        idUser: number,
+        productos: {
+            idProducto: number,
+            cantidad: number,
+        }[],
+        total: number,
+        idCard: string,
+        idSession: string
+    ) {
+        const foundUser = await this.userRepository.findOne({
+            where: {
+                id: idUser
+            }
+        });
+        let fecha = new Date()
+        const newVenta = this.ventaRepository.create({
+            usuario: foundUser,
+            total_venta: total,
+            fecha_venta: fecha,
+            estado: 'PConfirmar',
+            idCarrito: idCard,
+            idSession
+        });
+        const saveVenta = await this.ventaRepository.save(newVenta)
+        productos.forEach(async data => {
+            const foundProduct = await this.productRepository.findOne({
+                where: {
+                    id: data.idProducto
+                }
+            });
+            const saveDetalleVenta = this.detallesVenta.create({
+                cantidad: data.cantidad,
+                producto: foundProduct,
+                descuento: foundProduct.descuento,
+                precio: foundProduct.precio,
+                venta: saveVenta
+            });
+            this.detallesVenta.save(saveDetalleVenta);
+        })
+        setTimeout(async () => {
+            const foundVenta = await this.ventaRepository.findOne({
+                where: {
+                    id: saveVenta.id
+                },
+                relations: ['detallesVenta']
+            });
+            if (foundVenta.estado !== 'PConfirmar') {
+                console.log("no borra")
+                return
+            }
+            foundVenta.detallesVenta.forEach(async data => {
+                this.detallesVenta.delete(data.id)
+            });
+            await this.ventaRepository.delete(foundVenta.id)
+        }, 1800000);//1800000
+    }
+    async confirmVenta(idSession: string) {
+        const foundVenta = await this.ventaRepository.findOne({
+            where: {
+                idSession
+            }
+        });
+        this.ventaRepository.update(foundVenta.id, {
+            estado: 'Fenvio'
+        })
+        if(foundVenta.idCarrito === 'null'){
+            return
+        }
+        else{
+            await this.carritoRepository.update(+foundVenta.idCarrito,{
+                estado:'inactivo'
+            });
+            const newCard = this.carritoRepository.create({
+                usuario: foundVenta.usuario
+            })
+            this.carritoRepository.save(newCard)
+        }
+    }
     async getVentas(idUser: number) {
         const foundUser = await this.userRepository.findOne({
             where: {
@@ -87,7 +167,7 @@ export class VentasService {
             },
             order: {
                 fecha_venta: 'DESC',
-                id:'DESC'
+                id: 'DESC'
             },
             relations: ['detallesVenta', 'detallesVenta.producto', 'detallesVenta.producto.imagen', 'envio']
         });
@@ -186,7 +266,7 @@ export class VentasService {
 
         await this.detallesVenta.update(idVenta, {
             calificacion: raking,
-            comentario:saveComent
+            comentario: saveComent
         });
 
         const foundVentas = await this.detallesVenta.find({
@@ -205,8 +285,8 @@ export class VentasService {
         })
         rakingProduct = suma / lenght;
 
-        await this.productRepository.update(foundProduct,{
-            rating:rakingProduct
+        await this.productRepository.update(foundProduct, {
+            rating: rakingProduct
         })
 
         return {
@@ -214,56 +294,56 @@ export class VentasService {
             status: HttpStatus.OK
         }
     }
-    async getComentariosByid(idUser:number){
+    async getComentariosByid(idUser: number) {
         const foundUser = await this.userRepository.findOne({
-            where:{
-                id:idUser
+            where: {
+                id: idUser
             },
-            relations:['ventas','ventas.detallesVenta','ventas.detallesVenta.producto','ventas.detallesVenta.producto.imagen','ventas.detallesVenta.comentario']
+            relations: ['ventas', 'ventas.detallesVenta', 'ventas.detallesVenta.producto', 'ventas.detallesVenta.producto.imagen', 'ventas.detallesVenta.comentario']
         });
         let detallesVenta = [];
 
-        foundUser.ventas.forEach(data =>{
-            data.detallesVenta.forEach(dataVen =>{
-                if(dataVen.comentario)
+        foundUser.ventas.forEach(data => {
+            data.detallesVenta.forEach(dataVen => {
+                if (dataVen.comentario)
                     detallesVenta.push(dataVen)
             })
         });
-        detallesVenta = detallesVenta.map(data =>{
-            return{
-                producto:data.producto.nombre_producto,
-                precio:data.precio,
-                cantidad:data.cantidad,
-                calificacion:data.calificacion,
-                comentario:data.comentario,
-                imagen_url:data.producto.imagen[0].url_imagen
+        detallesVenta = detallesVenta.map(data => {
+            return {
+                producto: data.producto.nombre_producto,
+                precio: data.precio,
+                cantidad: data.cantidad,
+                calificacion: data.calificacion,
+                comentario: data.comentario,
+                imagen_url: data.producto.imagen[0].url_imagen
             }
         });
         console.log(detallesVenta)
-        return{
-            message:'exito',
-            status:HttpStatus.OK,
-            data:detallesVenta
+        return {
+            message: 'exito',
+            status: HttpStatus.OK,
+            data: detallesVenta
         }
     }
-    async ventaComplete(data:{idEnvio:number,fecha:Date,idVenta:number}){
+    async ventaComplete(data: { idEnvio: number, fecha: Date, idVenta: number }) {
         const foundEnvio = await this.enviosRepository.findOne({
-            where:{
-                id:data.idEnvio
+            where: {
+                id: data.idEnvio
             }
         });
         const foundVenta = await this.ventaRepository.findOne({
-            where:{
-                id:data.idVenta
+            where: {
+                id: data.idVenta
             }
         });
         foundVenta.estado = 'completo';
-        foundEnvio.fecha_entrega = data.fecha;  
+        foundEnvio.fecha_entrega = data.fecha;
         await this.enviosRepository.update(foundEnvio.id, foundEnvio)
         await this.ventaRepository.update(foundVenta.id, foundVenta)
         return {
-            message:'Exito',
-            status:HttpStatus.OK
+            message: 'Exito',
+            status: HttpStatus.OK
         }
     }
 }

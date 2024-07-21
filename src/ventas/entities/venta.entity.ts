@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn,OneToOne , ManyToOne,OneToMany,JoinColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, OneToOne, ManyToOne, OneToMany, JoinColumn, Column } from "typeorm";
 import { User } from "src/users/entities/user.entity"
 import { DetallesVenta } from "./detalles_venta.entity"
 import { Envios } from "./envios.entity";
@@ -8,21 +8,27 @@ export class Venta {
     id: number;
 
     @Column()
-    total_venta:number;
+    total_venta: number;
 
-    @Column({type: 'date', nullable: true})
-    fecha_venta:Date | null;
+    @Column({ type: 'date', nullable: true })
+    fecha_venta: Date | null;
 
-    @Column({default:'Fenvio'})
-    estado:string;
+    @Column({ default: 'Fenvio' })
+    estado: string;
 
-    @OneToMany(()=>DetallesVenta, detallesVenta => detallesVenta.venta )
+    @Column({ nullable: true })
+    idSession: string;
+
+    @Column({ nullable: true })
+    idCarrito: string;
+
+    @OneToMany(() => DetallesVenta, detallesVenta => detallesVenta.venta)
     detallesVenta: DetallesVenta[];
 
-    @ManyToOne(()=>User, user => user.ventas)
-    usuario:User;
+    @ManyToOne(() => User, user => user.ventas)
+    usuario: User;
 
-    @OneToOne(()=>Envios)
+    @OneToOne(() => Envios)
     @JoinColumn()
-    envio:Envios
+    envio: Envios
 } 
