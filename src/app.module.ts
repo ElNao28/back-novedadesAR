@@ -10,15 +10,16 @@ import { CheckEmailModule } from './check-email/check-email.module';
 import { ProductsModule } from './products/products.module';
 import { CarritoModule } from './carrito/carrito.module';
 import { VentasModule } from './ventas/ventas.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'monorail.proxy.rlwy.net',//roundhouse.proxy.rlwy.net localhost
-      port: 32140,//23516 3306
+      host: 'monorail.proxy.rlwy.net',//localhost monorail.proxy.rlwy.net
+      port: 32140,//3306 32140
       username: 'root',
-      password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//3CfeBhE43BA4CghG1G5HgDhh62D5GHdF
+      password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
       database: 'railway',//railway db_novedadesar
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
@@ -30,7 +31,8 @@ import { VentasModule } from './ventas/ventas.module';
     CheckEmailModule,
     ProductsModule,
     CarritoModule,
-    VentasModule
+    VentasModule,
+    AdminModule
     
   ],
   controllers: [AppController],

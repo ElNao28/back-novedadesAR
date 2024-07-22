@@ -13,10 +13,15 @@ import * as path from 'path';
 import { ResDto } from './dto/res.dto';
 import MercadoPagoConfig, { Preference, Payment } from 'mercadopago';
 import { VentasService } from 'src/ventas/ventas.service';
-import { User } from 'src/users/entities/user.entity';
 import { Items } from './entities/Items.interface';
 import { Imagenes } from './entities/imagenes.entity';
-// Configura la API key y secret key de Cloudinary
+import { Comentarios } from './entities/comentatios.entity';
+import { User } from 'src/users/entities/user.entity';
+
+import Stripe from 'stripe';
+import { Venta } from 'src/ventas/entities/venta.entity';
+const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
+
 cloudinary.v2.config({
   cloud_name: 'dy5jdb6tv',
   api_key: '248559475624584',
@@ -27,6 +32,8 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product) private producRepository: Repository<Product>,
     @InjectRepository(Imagenes) private imagenesRepository: Repository<Imagenes>,
+    @InjectRepository(Comentarios) private comentariosRepository: Repository<Comentarios>,
+    @InjectRepository(User) private userRepository: Repository<User>,
     private ventasService: VentasService) { }
 
   async create(createProductDto: CreateProductDto, file: { imagen?: Express.Multer.File[] }) {
@@ -45,7 +52,7 @@ export class ProductsService {
         const result = await cloudinary.v2.uploader.upload(filePath, {
           folder: 'tu-carpeta',
           resource_type: 'image'
-        }); 
+        });
         // Elimina el archivo temporal después de subirlo a Cloudinary
         fs.unlinkSync(filePath);
 
@@ -64,20 +71,20 @@ export class ProductsService {
       throw new HttpException('Error al subir la imagen a Cloudinary', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  async updateProduct(updateProductDto:UpdateProductDto,id:number){
+  async updateProduct(updateProductDto: UpdateProductDto, id: number) {
     const foundProduct = await this.producRepository.findOne({
-      where:{
+      where: {
         id
       }
     });
-    if(!foundProduct) return{
+    if (!foundProduct) return {
       message: 'Producto no encontrado',
       status: HttpStatus.NOT_FOUND
     }
-    await this.producRepository.update(id,updateProductDto)
-    return{
-      message:'Producto actualizado',
-      status:HttpStatus.OK
+    await this.producRepository.update(id, updateProductDto)
+    return {
+      message: 'Producto actualizado',
+      status: HttpStatus.OK
     }
   }
   findAll() {
@@ -85,13 +92,75 @@ export class ProductsService {
       where: {
         status: "activo"
       },
+      order: {
+        id: 'DESC'
+      },
       relations: ['imagen']
     },);
   }
+  async findNovedades() {
+    let productsWithDes = [];
+    const nuevo = await this.producRepository.find({
+      where: {
+        status: "activo"
+      },
+      order: {
+        id: 'DESC'
+      },
+      take: 9,
+      relations: ['imagen']
+    });
+    const descuento = await this.producRepository.find({
+      where: {
+        status: 'activo'
+      },
+      relations: ['imagen']
+    });
+    descuento.forEach(product => {
+      if (productsWithDes.length >= 9) {
+        return productsWithDes
+      }
+      if (product.descuento > 0) {
+        productsWithDes.push(product)
+      }
+    });
 
-  findAllProducts(){
+    const dama = await this.producRepository.find({
+      where: {
+        status: 'activo',
+        categoria: 'M'
+      },
+      order: {
+        id: 'DESC'
+      },
+      take: 9,
+      relations: ['imagen']
+    });
+    const caballero = await this.producRepository.find({
+      where: {
+        status: 'activo',
+        categoria: 'H',
+      },
+      order: {
+        id: 'DESC'
+      },
+      take: 9,
+      relations: ['imagen']
+    });
+
+    return {
+      message: 'exito',
+      status: HttpStatus.OK,
+      novedades: nuevo,
+      descuento: productsWithDes,
+      dama: dama,
+      caballero: caballero
+    }
+
+  }
+  findAllProducts() {
     return this.producRepository.find({
-      relations:['imagen']
+      relations: ['imagen']
     })
   }
   async findOne(id: number) {
@@ -102,6 +171,10 @@ export class ProductsService {
       },
       relations: ['imagen', 'comentarios', 'comentarios.usuario']
     })
+    if (!product) return {
+      message: 'No encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
     for (let i = 0; i < product.comentarios.length; i++) {
       comentarios.push(
         {
@@ -126,13 +199,55 @@ export class ProductsService {
       comentarios: comentarios
     };
   }
+  async findOneProduct(id: number) {
+    let comentarios = [];
+    const product = await this.producRepository.findOne({
+      where: {
+        id: id
+      },
+      relations: ['imagen', 'comentarios', 'comentarios.usuario']
+    })
+    if (!product) return {
+      message: 'No encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    if (product.status === 'inactivo') return {
+      message: 'No encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    for (let i = 0; i < product.comentarios.length; i++) {
+      comentarios.push(
+        {
+          comentario: product.comentarios[i].comentario,
+          fecha: product.comentarios[i].fecha,
+          usuario: product.comentarios[i].usuario.name + " " + product.comentarios[i].usuario.lastname + " " + product.comentarios[i].usuario.motherLastname
+        }
+      )
+    }
+    return {
+      message: 'Exito',
+      status: HttpStatus.OK,
+      data: {
+        id: product.id,
+        nombre_producto: product.nombre_producto,
+        precio: product.precio,
+        descripccion: product.descripccion,
+        stock: product.stock,
+        categoria: product.categoria,
+        rating: product.rating,
+        descuento: product.descuento,
+        status: product.status,
+        tipo: product.tipo,
+        imagen: product.imagen,
+        comentarios: comentarios
+      }
+    };
+  }
   async formPago(res: ResDto[]) {
     let url = "";
     const client = new MercadoPagoConfig({
       accessToken: 'TEST-3954097920512827-030816-523113fab0eca51c8a57d53e2cf509d6-1719432312'
     });
-
-    const payment = new Payment(client)
 
     const preference = new Preference(client);
     const products: Items[] = []
@@ -153,21 +268,30 @@ export class ProductsService {
           ],
           installments: 1
         },
-        items: products,
+        //items: products,
+        items: [
+          {
+            id: '1',
+            title: 'prueba',
+            quantity: 1,
+            unit_price: 100,
+            description: "ola"
+          }
+        ],
         back_urls: {
           success: 'https://novedades-ar.netlify.app/#/inicio',
-          failure: 'http://localhost:3000/failure',
-          pending: 'http://localhost:3000/pending'
+          failure: 'http://localhost:4200/inicio',
+          pending: 'http://localhost:4200/inicio'
         },
         //https://back-novedadesar-production.up.railway.app https://8831-187-249-108-43.ngrok-free.app 
-        notification_url: 'https://back-novedadesar-production.up.railway.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
+        notification_url: 'https://4c48-201-162-250-184.ngrok-free.app/products/res-pago/' + res[0].idUser + '/card/' + res[0].idCard
       }
     })
       .then(res => {
         url = res.sandbox_init_point;
       })
       .catch(err => {
-        console.log(err)
+        console.log(err, 'error')
       });
     return {
       url: url
@@ -223,14 +347,6 @@ export class ProductsService {
       }
     }
     if (datos.caballero === true && datos.dama === false) {
-      if (productsFilter.length === 0) {
-        return this.producRepository.find({
-          where: {
-            categoria: 'H'
-          },
-          relations: ['imagen']
-        })
-      }
       for (let i = 0; i < productsFilter.length; i++) {
         if (productsFilter[i].categoria === 'H') {
           productsSend.push(productsFilter[i]);
@@ -239,14 +355,6 @@ export class ProductsService {
       return productsSend;
     }
     else if (datos.caballero === false && datos.dama === true) {
-      if (productsFilter.length === 0) {
-        return this.producRepository.find({
-          where: {
-            categoria: 'M'
-          },
-          relations: ['imagen']
-        })
-      }
       for (let i = 0; i < productsFilter.length; i++) {
         if (productsFilter[i].categoria === 'M') {
           productsSend.push(productsFilter[i]);
@@ -255,9 +363,8 @@ export class ProductsService {
       return productsSend;
     }
     else {
-      return this.producRepository.find({
-        relations: ['imagen']
-      })
+      productsSend = productsFilter;
+      return productsSend
     }
   }
   getProductsByGender(gender: string, tipo: string) {
@@ -269,53 +376,101 @@ export class ProductsService {
       relations: ['imagen']
     })
   }
-  async alterStatusProduct(id:number,action:boolean){
+  async alterStatusProduct(id: number, action: boolean) {
     const foundProduct = await this.producRepository.findOne({
-      where:{
+      where: {
         id
       }
     });
-    if(!foundProduct)return{
-      message:'not found',
-      status:HttpStatus.NOT_FOUND
+    if (!foundProduct) return {
+      message: 'not found',
+      status: HttpStatus.NOT_FOUND
     }
-    if(action === true){
-    if(foundProduct.stock <= 0) return{
-      message:'No hay stock suficiente',
-      status:HttpStatus.BAD_REQUEST
-    }
-     await this.producRepository.update(id,{
-      status:'activo'
-     });
-    }
-    else{
-      await this.producRepository.update(id,{
-        status:'inactivo'
+    if (action === true) {
+      if (foundProduct.stock <= 0) return {
+        message: 'No hay stock suficiente',
+        status: HttpStatus.BAD_REQUEST
+      }
+      await this.producRepository.update(id, {
+        status: 'activo'
       });
     }
-    return{
-      message:'Status actualizado',
-      status:HttpStatus.OK
+    else {
+      await this.producRepository.update(id, {
+        status: 'inactivo'
+      });
+    }
+    return {
+      message: 'Status actualizado',
+      status: HttpStatus.OK
     }
   }
-  async getProductsByDescuento(){
+  async getProductsByDescuento() {
     let productsWithDes = [];
     const products = await this.producRepository.find({
-      where:{
-        status:'activo'
+      where: {
+        status: 'activo'
       },
-      relations:['imagen']
+      relations: ['imagen']
     });
     products.forEach(product => {
-      if(product.descuento >0){
+      if (product.descuento > 0) {
         productsWithDes.push(product)
       }
     });
 
-    return{
-      message:'exito',
-      status:HttpStatus.OK,
-      data:productsWithDes
+    return {
+      message: 'exito',
+      status: HttpStatus.OK,
+      data: productsWithDes
     }
+  }
+  async pagoStripe(data: ResDto[]) {
+    let url: string = '';
+    let items = [];
+    let itemsVenta = [];
+    items = data.map(data => {
+      return {
+        price_data: {
+          currency: 'mxn',
+          product_data: {
+            name: data.title,
+          },
+          unit_amount: data.precio * 100,
+        },
+        quantity: data.cantidad,
+
+      }
+    })
+    itemsVenta = data.map(data => {
+      return {
+        idProducto: data.id,
+        cantidad: data.cantidad
+      }
+    })
+    await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: items,
+      mode: 'payment',
+      success_url: 'http://localhost:4200/#/inicio',
+      cancel_url: 'http://localhost:4200/#/inicio',
+      expires_at: Math.floor(Date.now() / 1000) + 1800
+
+    }).then(session => {
+      url = session.url
+      let total = 0;
+      data.forEach(data => {
+        total = data.precio * data.precio
+      });
+      this.ventasService.addVentaStripe(+data[0].idUser, itemsVenta, total, data[0].idCard, session.id)
+    }).catch(error => {
+      console.error(error);
+    });
+    return {
+      url
+    }
+  }
+  async savePago(idSession: string) {
+    this.ventasService.confirmVenta(idSession)
   }
 }
