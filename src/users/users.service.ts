@@ -28,11 +28,11 @@ export class UsersService {
   async createUser(userData: CreateUserDto) {
 
     let dataUbi: CreateUbicacionDto = {
-      estado: userData.estado,
-      municipio: userData.municipio,
-      cp: userData.cp,
-      colonia: userData.colonia,
-      referencia: userData.referencia
+      estado: '',
+      municipio: '',
+      cp: 0,
+      colonia: '',
+      referencia: ''
     }
 
     const foundEmail = await this.userRepository.findOne({
