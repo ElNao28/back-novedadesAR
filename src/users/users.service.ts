@@ -55,10 +55,15 @@ export class UsersService {
     }
 
     const { password, ...userDt } = userData;
+    const numeroAleatorio = Math.floor(100000 + Math.random() * 900000);
+    const data = {
+      codeAlexa:numeroAleatorio.toString(),
+      ...userDt
+    }
 
     const newUser = this.userRepository.create({
       password: bcryptjs.hashSync(password, 10),
-      ...userDt,
+      ...data,
     });
     this.userRepository.save(newUser);
 
