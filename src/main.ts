@@ -4,15 +4,11 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
-  // const CorsOptions: CorsOptions = {
-  //   origin: ['https://novedades-ar.netlify.app', 'http://localhost:4200'], 
-  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  //   credentials: false,
-  // }
-
-  // app.enableCors(CorsOptions);
-
-  await app.listen( process.env.PORT || 3000 );
+  app.enableCors({
+    origin: ['https://novedades-ar.netlify.app', 'http://localhost:4200'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: false,
+  })
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
