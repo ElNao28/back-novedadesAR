@@ -10,6 +10,7 @@ import { CheckEmailModule } from './check-email/check-email.module';
 import { ProductsModule } from './products/products.module';
 import { CarritoModule } from './carrito/carrito.module';
 import { VentasModule } from './ventas/ventas.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { VentasModule } from './ventas/ventas.module';
     CheckEmailModule,
     ProductsModule,
     CarritoModule,
-    VentasModule
+    VentasModule,
+    AdminModule
     
   ],
   controllers: [AppController],

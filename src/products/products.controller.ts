@@ -71,6 +71,10 @@ export class ProductsController {
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
   }
+  @Get('one/:id')
+  produtsOne(@Param('id') id: string) {
+    return this.productsService.findOneProduct(+id);
+  }
 
   @Post('res-pago/:id/card/:idcard')
   async resPago(@Body() data: dataPayment, @Param('id') idUser: string, @Param('idcard') idCard: string) {

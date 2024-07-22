@@ -171,6 +171,10 @@ export class ProductsService {
       },
       relations: ['imagen', 'comentarios', 'comentarios.usuario']
     })
+    if (!product) return {
+      message: 'No encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
     for (let i = 0; i < product.comentarios.length; i++) {
       comentarios.push(
         {
@@ -193,6 +197,50 @@ export class ProductsService {
       tipo: product.tipo,
       imagen: product.imagen,
       comentarios: comentarios
+    };
+  }
+  async findOneProduct(id: number) {
+    let comentarios = [];
+    const product = await this.producRepository.findOne({
+      where: {
+        id: id
+      },
+      relations: ['imagen', 'comentarios', 'comentarios.usuario']
+    })
+    if (!product) return {
+      message: 'No encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    if (product.status === 'inactivo') return {
+      message: 'No encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    for (let i = 0; i < product.comentarios.length; i++) {
+      comentarios.push(
+        {
+          comentario: product.comentarios[i].comentario,
+          fecha: product.comentarios[i].fecha,
+          usuario: product.comentarios[i].usuario.name + " " + product.comentarios[i].usuario.lastname + " " + product.comentarios[i].usuario.motherLastname
+        }
+      )
+    }
+    return {
+      message: 'Exito',
+      status: HttpStatus.OK,
+      data: {
+        id: product.id,
+        nombre_producto: product.nombre_producto,
+        precio: product.precio,
+        descripccion: product.descripccion,
+        stock: product.stock,
+        categoria: product.categoria,
+        rating: product.rating,
+        descuento: product.descuento,
+        status: product.status,
+        tipo: product.tipo,
+        imagen: product.imagen,
+        comentarios: comentarios
+      }
     };
   }
   async formPago(res: ResDto[]) {
@@ -377,9 +425,7 @@ export class ProductsService {
       data: productsWithDes
     }
   }
-
-
-  async pagoStripe(data:ResDto[]){
+  async pagoStripe(data: ResDto[]) {
     let url: string = '';
     let items = [];
     let itemsVenta = [];
@@ -392,19 +438,19 @@ export class ProductsService {
           },
           unit_amount: data.precio * 100,
         },
-        quantity:data.cantidad,
-        
+        quantity: data.cantidad,
+
       }
     })
-    itemsVenta = data.map(data =>{
-      return{
-        idProducto:data.id,
-        cantidad:data.cantidad
+    itemsVenta = data.map(data => {
+      return {
+        idProducto: data.id,
+        cantidad: data.cantidad
       }
     })
     await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items:items,
+      line_items: items,
       mode: 'payment',
       success_url: 'http://localhost:4200/#/inicio',
       cancel_url: 'http://localhost:4200/#/inicio',
@@ -416,7 +462,7 @@ export class ProductsService {
       data.forEach(data => {
         total = data.precio * data.precio
       });
-      this.ventasService.addVentaStripe(+data[0].idUser,itemsVenta,total,data[0].idCard,session.id)
+      this.ventasService.addVentaStripe(+data[0].idUser, itemsVenta, total, data[0].idCard, session.id)
     }).catch(error => {
       console.error(error);
     });
@@ -424,9 +470,7 @@ export class ProductsService {
       url
     }
   }
-
-  async savePago(idSession:string){
+  async savePago(idSession: string) {
     this.ventasService.confirmVenta(idSession)
   }
 }
-//whsec_o5zdRYYi7W9DxXynnhVP3hbmAu6Rn3bX
