@@ -452,8 +452,8 @@ export class ProductsService {
       payment_method_types: ['card'],
       line_items: items,
       mode: 'payment',
-      success_url: 'http://localhost:4200/#/inicio',
-      cancel_url: 'http://localhost:4200/#/inicio',
+      success_url: 'https://novedades-ar.netlify.app/#/inicio',
+      cancel_url: 'https://novedades-ar.netlify.app/#/inicio',
       expires_at: Math.floor(Date.now() / 1000) + 1800
 
     }).then(session => {
