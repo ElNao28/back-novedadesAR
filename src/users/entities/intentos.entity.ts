@@ -4,6 +4,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 export class Intentos {
     @PrimaryGeneratedColumn()
     id:number;
-    @Column({nullable:true})
+    @Column({nullable:true,default:0})
     intentos:number;
 } 

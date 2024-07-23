@@ -18,7 +18,7 @@ export class Product {
     stock: number;
     @Column()
     categoria: string;
-    @Column()
+    @Column({default:0})
     rating?: number | null;
     @Column()
     descuento: number;

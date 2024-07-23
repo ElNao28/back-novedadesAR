@@ -4,14 +4,14 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 export class Ubicacion{
     @PrimaryGeneratedColumn()
     id: number
-    @Column()
+    @Column({nullable:true,default:''})
     estado:string;
-    @Column() 
+    @Column({nullable:true,default:''}) 
     municipio:string;
-    @Column()
+    @Column({nullable:true,default:0})
     cp:number;
-    @Column()
+    @Column({nullable:true,default:''})
     colonia:string;
-    @Column()
+    @Column({nullable:true, default:''})
     referencia:string;
 }
