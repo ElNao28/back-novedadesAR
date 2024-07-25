@@ -16,11 +16,11 @@ import { AdminModule } from './admin/admin.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net localhost
-      port: 32140,//32140 3306
+      host: 'localhost',//monorail.proxy.rlwy.net localhost
+      port: 3306,//32140 3306
       username: 'root',
-      password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
-      database: 'railway',//railway db_novedadesar
+      password: '',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
+      database: 'db_novedadesar',//railway db_novedadesar
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, 
     }),

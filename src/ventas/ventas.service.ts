@@ -138,7 +138,7 @@ export class VentasService {
             where: {
                 idSession
             },
-            relations:['detallesVenta','detallesVenta.producto']
+            relations:['detallesVenta','detallesVenta.producto','usuario']
         });
         this.ventaRepository.update(foundVenta.id, {
             estado: 'Fenvio'
@@ -231,27 +231,6 @@ export class VentasService {
             message: 'exito',
             status: HttpStatus.OK
         }
-    }
-    async dataByDataSet() {
-        const foundDetalles = await this.detallesVenta.find({
-            relations: ['producto', 'venta']
-        });
-
-        const filterByDataSet = foundDetalles.map((data) => {
-            return {
-                id: data.id,
-                producto: data.producto.nombre_producto,
-                descuento: data.descuento,
-                precio: data.precio,
-                stock: data.producto.stock,
-                categoria: data.producto.categoria,
-                tipo: data.producto.tipo,
-                rating: data.producto.rating,
-                fecha_venta: data.venta.fecha_venta,
-                cantidad: data.cantidad
-            }
-        })
-        return filterByDataSet
     }
     async addRaking(idVenta: number, raking: number, opinion: string) {
         const foundDetalles = await this.detallesVenta.findOne({
@@ -360,4 +339,29 @@ export class VentasService {
             status: HttpStatus.OK
         }
     }
+
+
+    async dataByDataSet() {
+        const foundDetalles = await this.detallesVenta.find({
+            relations: ['producto', 'venta']
+        });
+
+        const filterByDataSet = foundDetalles.map((data) => {
+            return {
+                id: data.id,
+                producto: data.producto.nombre_producto,
+                descuento: data.descuento,
+                precio: data.precio,
+                stock: data.producto.stock,
+                categoria: data.producto.categoria,
+                tipo: data.producto.tipo,
+                rating: data.producto.rating,
+                fecha_venta: data.venta.fecha_venta,
+                cantidad: data.cantidad
+            }
+        })
+        return filterByDataSet
+    }
+
+    
 }
