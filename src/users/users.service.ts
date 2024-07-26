@@ -57,7 +57,7 @@ export class UsersService {
     const { password, ...userDt } = userData;
     const numeroAleatorio = Math.floor(100000 + Math.random() * 900000);
     const data = {
-      codeAlexa:numeroAleatorio.toString(),
+      codeAlexa: numeroAleatorio.toString(),
       ...userDt
     }
 
@@ -377,6 +377,24 @@ export class UsersService {
     return {
       message: 'Cuenta con unbicacion',
       status: HttpStatus.OK
+    }
+  }
+  async getUsersTop(user:number[]) {
+    let usersData = [];
+    for (let i = 0; i < user.length; i++) {
+      const foundUsers = await this.userRepository.findOne({
+        where:{
+          id:user[i]
+        }
+      });
+      if(foundUsers){
+        usersData.push(foundUsers)
+      }
+    }
+    return{
+      message:'Exito',
+      status:HttpStatus.OK,
+      data:usersData
     }
   }
 }
