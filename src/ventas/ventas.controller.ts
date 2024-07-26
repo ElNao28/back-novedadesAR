@@ -36,4 +36,8 @@ export class VentasController {
   ventaComplete(@Body()data:{idEnvio:number,fecha:Date,idVenta:number}){
     return this.ventasService.ventaComplete(data);
   }
+  @Post('canceled')
+  canceledVenta(@Body()data:{id:number}){
+    return this.ventasService.canceledVenta(data.id)
+  }
 }

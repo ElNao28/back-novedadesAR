@@ -127,7 +127,7 @@ export class VentasService {
                 console.log("no borra")
                 return
             }
-            for(let i = 0; i <foundVenta.detallesVenta.length;i++){
+            for (let i = 0; i < foundVenta.detallesVenta.length; i++) {
                 await this.detallesVenta.delete(foundVenta.detallesVenta[i].id)
             }
             await this.ventaRepository.delete(foundVenta.id)
@@ -138,12 +138,12 @@ export class VentasService {
             where: {
                 idSession
             },
-            relations:['detallesVenta','detallesVenta.producto','usuario']
+            relations: ['detallesVenta', 'detallesVenta.producto', 'usuario']
         });
         this.ventaRepository.update(foundVenta.id, {
             estado: 'Fenvio'
         })
-        for(let i = 0; i < foundVenta.detallesVenta.length;i++){
+        for (let i = 0; i < foundVenta.detallesVenta.length; i++) {
             let newStock = 0;
             const foundProduct = await this.productRepository.findOne({
                 where: {
@@ -157,12 +157,12 @@ export class VentasService {
                 stock: newStock
             });
         }
-        if(foundVenta.idCarrito === 'null'){
+        if (foundVenta.idCarrito === 'null') {
             return
         }
-        else{
-            await this.carritoRepository.update(+foundVenta.idCarrito,{
-                estado:'inactivo'
+        else {
+            await this.carritoRepository.update(+foundVenta.idCarrito, {
+                estado: 'inactivo'
             });
             const newCard = this.carritoRepository.create({
                 usuario: foundVenta.usuario
@@ -342,26 +342,50 @@ export class VentasService {
 
 
     async dataByDataSet() {
-        const foundDetalles = await this.detallesVenta.find({
-            relations: ['producto', 'venta']
-        });
+        // const foundDetalles = await this.detallesVenta.find({
+        //     relations: ['producto', 'venta'],
 
-        const filterByDataSet = foundDetalles.map((data) => {
-            return {
-                id: data.id,
-                producto: data.producto.nombre_producto,
-                descuento: data.descuento,
-                precio: data.precio,
-                stock: data.producto.stock,
-                categoria: data.producto.categoria,
-                tipo: data.producto.tipo,
-                rating: data.producto.rating,
-                fecha_venta: data.venta.fecha_venta,
-                cantidad: data.cantidad
+        // }
+        // );
+        // const filterByDataSet = foundDetalles.map((data) => {
+        //     return {
+        //         id: data.id,
+        //         //producto: data.producto.nombre_producto,
+        //         descuento: data.descuento,
+        //         precio: data.precio,
+        //         stock: data.producto.stock,
+        //         categoria: data.producto.categoria,
+        //         tipo: data.producto.tipo,
+        //         rating: data.producto.rating,
+        //         //calificacion:data.calificacion,
+        //         //fecha_venta: data.venta.fecha_venta,
+        //         cantidad: data.cantidad
+        //     }
+        // })
+        // return filterByDataSet
+
+        const founVentas = await this.ventaRepository.find({
+            relations: ['usuario', 'usuario.ventas']
+        });
+        let filter = founVentas.map(data => {
+            if (data.estado === 'canceled' || data.estado === 'Fenvio') {
+                return {
+                    total:data.total_venta
+                }
             }
+
         })
-        return filterByDataSet
+        return founVentas
     }
 
-    
+    async canceledVenta(id:number){
+        console.log(id)
+        await this.ventaRepository.update(id,{
+            estado:'canceled'
+        });
+        return{
+            message:'Exito',
+            status:HttpStatus.OK
+        }
+    }
 }
