@@ -158,6 +158,25 @@ export class ProductsService {
     }
 
   }
+  async findProductsByPage(page:number){
+    let limit: number = 10
+    const foundProducts = await this.producRepository.findAndCount({
+      where: {
+        status: "activo"
+      },
+      order: {
+        id: 'DESC'
+      },
+      take: limit,
+      skip: (page) * limit,
+      relations: ['imagen']
+    })
+    return {
+      message:'exito',
+      status:HttpStatus.OK,
+      data:foundProducts
+    }
+  }
   findAllProducts() {
     return this.producRepository.find({
       relations: ['imagen']
