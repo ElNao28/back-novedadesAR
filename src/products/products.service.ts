@@ -335,7 +335,6 @@ export class ProductsService {
     });
     return foundProducts;
   }
-
   async getProductByFilter(datos: { dama: boolean, caballero: boolean, datos: [] }) {
     let productsFilter = [];
     let productsSend = [];
@@ -371,7 +370,7 @@ export class ProductsService {
           productsSend.push(productsFilter[i]);
         }
       }
-      return productsSend;
+      return productsSend.slice();
     }
     else if (datos.caballero === false && datos.dama === true) {
       for (let i = 0; i < productsFilter.length; i++) {
