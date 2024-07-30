@@ -15,3 +15,4 @@ export class Admin {
     @Column({nullable:true})
     password: string;
 }
+ 

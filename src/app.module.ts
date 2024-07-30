@@ -12,16 +12,17 @@ import { CarritoModule } from './carrito/carrito.module';
 import { VentasModule } from './ventas/ventas.module';
 import { AdminModule } from './admin/admin.module';
 import { TestMsjModule } from './test-msj/test-msj.module';
+import { AboutUsModule } from './about-us/about-us.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net localhost
+      host: 'monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net
       port: 32140,//32140 3306
       username: 'root',
       password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
-      database: 'railway',//railway db_novedadesar
+      database: 'railway',//railway 
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, 
     }),
@@ -34,6 +35,7 @@ import { TestMsjModule } from './test-msj/test-msj.module';
     CarritoModule,
     VentasModule,
     AdminModule,
+    AboutUsModule,
     //TestMsjModule
   ],
   controllers: [AppController],
