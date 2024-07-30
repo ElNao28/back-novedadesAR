@@ -120,4 +120,13 @@ export class ProductsController {
   async preubaW(@Body() data) {
     this.productsService.savePago(data.data.object.id)
   }
+  @Patch('update-descuento')
+  updateDescuento(@Body()data:{descuento:number,id:number}){
+    return this.productsService.updateDescuento(data.id,data.descuento);
+  }
+  @Patch('update-stock')
+  updateStock(@Body()data:{id:number,stock:number}){
+    console.log(data)
+    return this.productsService.updateStock(data.id,data.stock);
+  }
 }

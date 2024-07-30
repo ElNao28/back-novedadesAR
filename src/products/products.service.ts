@@ -19,7 +19,6 @@ import { Comentarios } from './entities/comentatios.entity';
 import { User } from 'src/users/entities/user.entity';
 
 import Stripe from 'stripe';
-import { Venta } from 'src/ventas/entities/venta.entity';
 const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
 
 cloudinary.v2.config({
@@ -441,6 +440,34 @@ export class ProductsService {
       message: 'exito',
       status: HttpStatus.OK,
       data: productsWithDes
+    }
+  }
+  async updateDescuento(id:number, descuento:number){
+    const foundProduct = await this.producRepository.findOneBy({id})
+    if (!foundProduct) return {
+      message: 'Producto no encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    await this.producRepository.update(id,{
+      descuento
+    });
+    return{
+      message:'exito',
+      status:HttpStatus.OK
+    }
+  }
+  async updateStock(id:number, stock:number){
+    const foundProduct = await this.producRepository.findOneBy({id})
+    if (!foundProduct) return {
+      message: 'Producto no encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    await this.producRepository.update(id,{
+      stock
+    });
+    return{
+      message:'exito',
+      status:HttpStatus.OK
     }
   }
   async pagoStripe(data: ResDto[]) {

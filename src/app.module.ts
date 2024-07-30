@@ -11,6 +11,7 @@ import { ProductsModule } from './products/products.module';
 import { CarritoModule } from './carrito/carrito.module';
 import { VentasModule } from './ventas/ventas.module';
 import { AdminModule } from './admin/admin.module';
+import { TestMsjModule } from './test-msj/test-msj.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { AdminModule } from './admin/admin.module';
     ProductsModule,
     CarritoModule,
     VentasModule,
-    AdminModule
+    AdminModule,
+    //TestMsjModule
   ],
   controllers: [AppController],
   providers: [AppService],
