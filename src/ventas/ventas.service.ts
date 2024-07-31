@@ -9,6 +9,8 @@ import { DetallesVenta } from './entities/detalles_venta.entity';
 import { Items } from 'src/products/entities/Items.interface';
 import { Carrito } from 'src/carrito/entities/carrito.entity';
 import { Envios } from './entities/envios.entity';
+import { Chat } from "src/test-msj/entities/chat.entity";
+import { Admin } from "src/admin/entities/admin.entity";
 
 @Injectable()
 export class VentasService {
@@ -20,6 +22,8 @@ export class VentasService {
         @InjectRepository(Carrito) private carritoRepository: Repository<Carrito>,
         @InjectRepository(Envios) private enviosRepository: Repository<Envios>,
         @InjectRepository(Comentarios) private comentarioRepository: Repository<Comentarios>,
+        @InjectRepository(Chat) private chatRepository:Repository<Chat>,
+        @InjectRepository(Admin) private adminRepository:Repository<Admin>,
     ) { }
     async addVenta(idUser: number, products: Items[], idCard: string, total: number, fecha: string) {
         console.log(idUser, products, idCard, total, fecha)
@@ -140,9 +144,14 @@ export class VentasService {
             },
             relations: ['detallesVenta', 'detallesVenta.producto', 'usuario']
         });
+        const foundAdmin = await this.adminRepository.findOneBy({id:1});
+        const newChat = await this.chatRepository.create()
+        const saveChat = await this.chatRepository.save(newChat)
         this.ventaRepository.update(foundVenta.id, {
-            estado: 'Fenvio'
-        })
+            estado: 'Fenvio',
+            chat: saveChat,
+            admin:foundAdmin
+        });
         for (let i = 0; i < foundVenta.detallesVenta.length; i++) {
             let newStock = 0;
             const foundProduct = await this.productRepository.findOne({
