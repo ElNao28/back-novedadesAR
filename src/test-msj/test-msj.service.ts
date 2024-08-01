@@ -29,48 +29,48 @@ export class TestMsjService {
         private jwtService: JwtService
     ) { }
 
-    async registerClient(client: Socket, token: string) {
-        const tokenIs = this.jwtService.decode(token)
-        if (tokenIs.rol === 'admin') {
-            this.connectedClients[client.id] = {
-                socket: client,
-                rol: tokenIs.rol,
-                user: 1
-            };
-        }
-        else {
-            const user = await this.userRepository.findOne({
-                where: {
-                    id: tokenIs.sub
-                }
-            });
-            if (!user) throw new Error('User not found');
+    // async registerClient(client: Socket, token: string) {
+    //     const tokenIs = this.jwtService.decode(token)
+    //     if (tokenIs.rol === 'admin') {
+    //         this.connectedClients[client.id] = {
+    //             socket: client,
+    //             rol: tokenIs.rol,
+    //             user: 1
+    //         };
+    //     }
+    //     else {
+    //         const user = await this.userRepository.findOne({
+    //             where: {
+    //                 id: tokenIs.sub
+    //             }
+    //         });
+    //         if (!user) throw new Error('User not found');
 
-            this.checkUserConnection(user);
+    //         this.checkUserConnection(user);
 
-            this.connectedClients[client.id] = {
-                socket: client,
-                user: user.id,
-                rol: tokenIs.rol
-            };
-        }
+    //         this.connectedClients[client.id] = {
+    //             socket: client,
+    //             user: user.id,
+    //             rol: tokenIs.rol
+    //         };
+    //     }
 
-    }
-    private checkUserConnection(user: User) {
+    // }
+    // private checkUserConnection(user: User) {
 
-        for (const clientId of Object.keys(this.connectedClients)) {
+    //     for (const clientId of Object.keys(this.connectedClients)) {
 
-            const connectedClient = this.connectedClients[clientId];
+    //         const connectedClient = this.connectedClients[clientId];
 
-            if (connectedClient.user === user.id) {
-                connectedClient.socket.disconnect();
-                break;
-            }
-        }
-    }
-    removeClient(clientId: string) {
-        delete this.connectedClients[clientId];
-    }
+    //         if (connectedClient.user === user.id) {
+    //             connectedClient.socket.disconnect();
+    //             break;
+    //         }
+    //     }
+    // }
+    // removeClient(clientId: string) {
+    //     delete this.connectedClients[clientId];
+    // }
 
     async sendMessage(idVenta: number, message: string, by: string, client: Socket) {
         const foundVenta = await this.ventaRepository.findOne({
@@ -117,9 +117,8 @@ export class TestMsjService {
         });
         if (!foundVenta) throw new Error('Venta not found');
 
-        console.log(foundVenta.id)
         const messages = await this.testRepository.find({
-            where: {
+            where: { 
                 chat: foundVenta.chat
             }
         });
