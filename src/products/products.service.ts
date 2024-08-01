@@ -19,6 +19,7 @@ import { Comentarios } from './entities/comentatios.entity';
 import { User } from 'src/users/entities/user.entity';
 
 import Stripe from 'stripe';
+import { JwtService } from '@nestjs/jwt';
 const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
 
 cloudinary.v2.config({
@@ -33,6 +34,7 @@ export class ProductsService {
     @InjectRepository(Imagenes) private imagenesRepository: Repository<Imagenes>,
     @InjectRepository(Comentarios) private comentariosRepository: Repository<Comentarios>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    private jwtService:JwtService,
     private ventasService: VentasService) { }
 
   async create(createProductDto: CreateProductDto, file: { imagen?: Express.Multer.File[] }) {
@@ -507,7 +509,8 @@ export class ProductsService {
       data.forEach(data => {
         total = data.precio * data.precio
       });
-      this.ventasService.addVentaStripe(+data[0].idUser, itemsVenta, total, data[0].idCard, session.id)
+      const idUser = this.jwtService.decode(data[0].idUser)
+      this.ventasService.addVentaStripe(+idUser.sub, itemsVenta, total, data[0].idCard, session.id)
     }).catch(error => {
       console.error(error);
     });
