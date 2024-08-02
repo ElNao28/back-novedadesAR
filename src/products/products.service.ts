@@ -509,8 +509,8 @@ export class ProductsService {
       data.forEach(data => {
         total = data.precio * data.precio
       });
-      const idUser = this.jwtService.decode(data[0].idUser)
-      this.ventasService.addVentaStripe(+idUser.sub, itemsVenta, total, data[0].idCard, session.id)
+      //const idUser = this.jwtService.decode(data[0].idUser)
+      this.ventasService.addVentaStripe(+data[0].idUser, itemsVenta, total, data[0].idCard, session.id)
     }).catch(error => {
       console.error(error);
     });
