@@ -11,11 +11,16 @@ const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwU
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
+
+  @Get('products-by-type/:id')
+  getProductByTypeUser(@Param('id')type:string){
+    console.log(type)
+    return this.productsService.getProductByTypeUser(+type)
+  }
   @Get('page/:id')
   getProductsByPage(@Param('id')id:string){
     return this.productsService.findProductsByPage(+id)
   }
-
   @Get('get-promociones')
   getProductsByDescuento() {
     return this.productsService.getProductsByDescuento();

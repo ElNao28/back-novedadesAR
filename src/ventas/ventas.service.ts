@@ -358,18 +358,18 @@ export class VentasService {
         );
         const filterByDataSet = foundDetalles.map((data) => {
             return {
-                id: data.id,
+                id: data.venta.usuario.id,
                 descuento: data.descuento,
                 precio: data.precio,
-                stock: data.producto.stock,
                 categoria: data.producto.categoria,
                 tipo: data.producto.tipo,
                 rating: data.producto.rating,
-                userId:data.venta.usuario.id,
                 calificacion:data.calificacion,
-                fecha_venta: data.venta.fecha_venta,
                 cantidad: data.cantidad,
-                total:data.venta.total_venta
+                total:data.venta.total_venta,
+                genero:data.venta.usuario.gender,
+                fecha_venta: data.venta.fecha_venta
+                
             }
         })
         return filterByDataSet

@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, In, LessThan, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import * as cloudinary from 'cloudinary';
 
 import * as fs from 'fs';
@@ -17,9 +17,14 @@ import { Items } from './entities/Items.interface';
 import { Imagenes } from './entities/imagenes.entity';
 import { Comentarios } from './entities/comentatios.entity';
 import { User } from 'src/users/entities/user.entity';
+import { catchError, map } from 'rxjs/operators';
 
 import Stripe from 'stripe';
 import { JwtService } from '@nestjs/jwt';
+import { HttpService } from '@nestjs/axios';
+import { throwError } from 'rxjs';
+import { Venta } from 'src/ventas/entities/venta.entity';
+import { DetallesVenta } from 'src/ventas/entities/detalles_venta.entity';
 const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
 
 cloudinary.v2.config({
@@ -34,7 +39,9 @@ export class ProductsService {
     @InjectRepository(Imagenes) private imagenesRepository: Repository<Imagenes>,
     @InjectRepository(Comentarios) private comentariosRepository: Repository<Comentarios>,
     @InjectRepository(User) private userRepository: Repository<User>,
-    private jwtService:JwtService,
+    @InjectRepository(Venta) private ventaRepository: Repository<Venta>,
+    @InjectRepository(DetallesVenta) private detallesVentaRepository: Repository<DetallesVenta>,
+    private httpService: HttpService,
     private ventasService: VentasService) { }
 
   async create(createProductDto: CreateProductDto, file: { imagen?: Express.Multer.File[] }) {
@@ -159,7 +166,7 @@ export class ProductsService {
     }
 
   }
-  async findProductsByPage(page:number){
+  async findProductsByPage(page: number) {
     let limit: number = 10
     const foundProducts = await this.producRepository.findAndCount({
       where: {
@@ -173,9 +180,9 @@ export class ProductsService {
       relations: ['imagen']
     })
     return {
-      message:'exito',
-      status:HttpStatus.OK,
-      data:foundProducts
+      message: 'exito',
+      status: HttpStatus.OK,
+      data: foundProducts
     }
   }
   findAllProducts() {
@@ -444,32 +451,32 @@ export class ProductsService {
       data: productsWithDes
     }
   }
-  async updateDescuento(id:number, descuento:number){
-    const foundProduct = await this.producRepository.findOneBy({id})
+  async updateDescuento(id: number, descuento: number) {
+    const foundProduct = await this.producRepository.findOneBy({ id })
     if (!foundProduct) return {
       message: 'Producto no encontrado',
       status: HttpStatus.NOT_FOUND
     }
-    await this.producRepository.update(id,{
+    await this.producRepository.update(id, {
       descuento
     });
-    return{
-      message:'exito',
-      status:HttpStatus.OK
+    return {
+      message: 'exito',
+      status: HttpStatus.OK
     }
   }
-  async updateStock(id:number, stock:number){
-    const foundProduct = await this.producRepository.findOneBy({id})
+  async updateStock(id: number, stock: number) {
+    const foundProduct = await this.producRepository.findOneBy({ id })
     if (!foundProduct) return {
       message: 'Producto no encontrado',
       status: HttpStatus.NOT_FOUND
     }
-    await this.producRepository.update(id,{
+    await this.producRepository.update(id, {
       stock
     });
-    return{
-      message:'exito',
-      status:HttpStatus.OK
+    return {
+      message: 'exito',
+      status: HttpStatus.OK
     }
   }
   async pagoStripe(data: ResDto[]) {
@@ -521,4 +528,121 @@ export class ProductsService {
   async savePago(idSession: string) {
     this.ventasService.confirmVenta(idSession)
   }
+  async getProductByTypeUser(typeUser: number) {
+    try {
+      const foundUser = await this.userRepository.findOne({
+        where: {
+          id: typeUser
+        }
+      });
+      const ventas = await this.ventaRepository.find({
+        where: {
+          usuario: foundUser
+        },
+        order: {
+          id: 'DESC'
+        },
+        take: 2
+      });
+      const detalleVenta = await this.detallesVentaRepository.find({
+        where: {
+          venta: ventas[0]
+        },
+        relations: ['producto'],
+        order: {
+          id: 'DESC'
+        },
+        take: 1
+      });
+      const ultVenta = detalleVenta[0]
+      const payload = {
+        descuento: ultVenta.descuento,
+        precio: ultVenta.precio,
+        categoria: ultVenta.producto.categoria,
+        tipo: ultVenta.producto.tipo,
+        rating: ultVenta.producto.rating,
+        calificacion: ultVenta.calificacion,
+        cantidad: ultVenta.cantidad,
+        total: ventas[0].total_venta,
+        genero: foundUser.gender
+      }
+      console.log(payload)
+      const tipoCliente = await this.httpService.post<{ tipo_cliente: number }>('https://server-m3.onrender.com/predict', payload).pipe(
+        map(response => response.data.tipo_cliente),
+        catchError(error => {
+          console.error('Error occurred:', error);
+          return throwError(() => new Error('Error making POST request'));
+        })
+      ).toPromise();
+
+      let productos;
+
+      switch (tipoCliente) {
+        case 0:
+          console.log('0');
+          productos = await this.producRepository.find({
+            where: {
+              descuento: LessThanOrEqual(10),
+              precio: LessThan(100),
+              rating: LessThanOrEqual(3)
+            },
+            relations:['imagen'],
+            take: 9
+          });
+          break;
+
+        case 1:
+          console.log('1');
+          let gender;
+          if (foundUser.gender === 'F')
+            gender = 'M'
+          else
+            gender = 'H'
+          productos = await this.producRepository.find({
+            where: {
+              descuento: Between(25, 50),
+              precio: Between(180, 500),
+              categoria: gender,
+              rating: Between(3, 5)
+            },
+            relations:['imagen'],
+            take: 9
+          });
+          break;
+        case 2:
+          console.log('2');
+          productos = await this.producRepository.find({
+            where: {
+              descuento: Between(10, 25),
+              precio: Between(60, 300),
+              rating: MoreThan(4)
+            },
+            relations:['imagen'],
+            take: 9
+          });
+          break;
+
+        default:
+          return {
+            message: 'Tipo de usuario no válido',
+            status: HttpStatus.BAD_REQUEST,
+            data: []
+          };
+      }
+
+      return {
+        message: 'Éxito',
+        status: HttpStatus.OK,
+        data: productos
+      };
+
+    } catch (error) {
+      return {
+        message: 'Error al obtener los productos',
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        data: []
+      };
+    }
+  }
+
 }

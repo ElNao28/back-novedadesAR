@@ -13,8 +13,9 @@ import { Comentarios } from './entities/comentatios.entity';
 import { Envios } from 'src/ventas/entities/envios.entity';
 import { Chat } from 'src/test-msj/entities/chat.entity';
 import { Admin } from "src/admin/entities/admin.entity";
+import { HttpModule } from '@nestjs/axios';
 @Module({
-  imports: [TypeOrmModule.forFeature([Product, Imagenes,Venta,User,DetallesVenta,Carrito,Comentarios,Envios,Chat,Admin])],
+  imports: [TypeOrmModule.forFeature([Product, Imagenes,Venta,User,DetallesVenta,Carrito,Comentarios,Envios,Chat,Admin]),HttpModule],
   controllers: [ProductsController],
   providers: [ProductsService,VentasService],
 })
