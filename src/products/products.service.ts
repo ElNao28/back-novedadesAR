@@ -566,7 +566,6 @@ export class ProductsService {
         total: ventas[0].total_venta,
         genero: foundUser.gender
       }
-      console.log(payload)
       const tipoCliente = await this.httpService.post<{ tipo_cliente: number }>('https://server-m3.onrender.com/predict', payload).pipe(
         map(response => response.data.tipo_cliente),
         catchError(error => {
@@ -579,7 +578,7 @@ export class ProductsService {
 
       switch (tipoCliente) {
         case 0:
-          console.log('0');
+          console.log('tipo 0');
           productos = await this.producRepository.find({
             where: {
               descuento: LessThanOrEqual(10),
@@ -592,7 +591,7 @@ export class ProductsService {
           break;
 
         case 1:
-          console.log('1');
+          console.log('tipo 1');
           let gender;
           if (foundUser.gender === 'F')
             gender = 'M'
@@ -610,7 +609,7 @@ export class ProductsService {
           });
           break;
         case 2:
-          console.log('2');
+          console.log('tipo 2');
           productos = await this.producRepository.find({
             where: {
               descuento: Between(10, 25),
