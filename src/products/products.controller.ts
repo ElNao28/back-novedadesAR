@@ -14,7 +14,7 @@ export class ProductsController {
 
   @Get('products-by-type/:id')
   getProductByTypeUser(@Param('id')type:string){
-    console.log(type)
+    console.log('idCliente: '+type)
     return this.productsService.getProductByTypeUser(+type)
   }
   @Get('page/:id')
