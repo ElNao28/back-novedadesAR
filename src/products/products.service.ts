@@ -167,7 +167,7 @@ export class ProductsService {
 
   }
   async findProductsByPage(page: number) {
-    let limit: number = 10
+    let limit: number = 12
     const foundProducts = await this.producRepository.findAndCount({
       where: {
         status: "activo"
