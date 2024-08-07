@@ -349,7 +349,8 @@ export class ProductsService {
     for (let i = 0; i < datos.datos.length; i++) {
       const foundProducts = await this.producRepository.find({
         where: {
-          tipo: datos.datos[i]
+          tipo: datos.datos[i],
+          status:'activo'
         },
         relations: ['imagen']
       });
@@ -397,7 +398,8 @@ export class ProductsService {
     return this.producRepository.find({
       where: {
         categoria: gender,
-        tipo: tipo
+        tipo: tipo,
+        status:'activo'
       },
       relations: ['imagen']
     })
@@ -583,7 +585,8 @@ export class ProductsService {
             where: {
               descuento: LessThanOrEqual(10),
               precio: LessThan(100),
-              rating: LessThanOrEqual(3)
+              rating: LessThanOrEqual(3),
+              status:'activo'
             },
             relations:['imagen'],
             take: 9
@@ -602,7 +605,8 @@ export class ProductsService {
               descuento: Between(25, 50),
               precio: Between(180, 500),
               categoria: gender,
-              rating: Between(3, 5)
+              rating: Between(3, 5),
+              status:'activo'
             },
             relations:['imagen'],
             take: 9
@@ -614,7 +618,8 @@ export class ProductsService {
             where: {
               descuento: Between(10, 25),
               precio: Between(60, 300),
-              rating: MoreThan(4)
+              rating: MoreThan(4),
+              status:'activo'
             },
             relations:['imagen'],
             take: 9
