@@ -7,16 +7,22 @@ import { EmailModule } from './email/email.module';
 import { LoginModule } from './login/login.module';
 import { RecoverPasswordModule } from './recover-password/recover-password.module';
 import { CheckEmailModule } from './check-email/check-email.module';
+import { ProductsModule } from './products/products.module';
+import { CarritoModule } from './carrito/carrito.module';
+import { VentasModule } from './ventas/ventas.module';
+import { AdminModule } from './admin/admin.module';
+import { TestMsjModule } from './test-msj/test-msj.module';
+import { AboutUsModule } from './about-us/about-us.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'monorail.proxy.rlwy.net',//roundhouse.proxy.rlwy.net localhost
-      port: 32140,//23516 3306
+      host: 'monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net
+      port: 32140,//32140 3306
       username: 'root',
-      password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//3CfeBhE43BA4CghG1G5HgDhh62D5GHdF
-      database: 'railway',//railway db_novedadesar
+      password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
+      database: 'railway',//railway 
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, 
     }),
@@ -25,7 +31,12 @@ import { CheckEmailModule } from './check-email/check-email.module';
     LoginModule,
     RecoverPasswordModule,
     CheckEmailModule,
-    
+    ProductsModule,
+    CarritoModule,
+    VentasModule,
+    AdminModule,
+    AboutUsModule,
+    TestMsjModule
   ],
   controllers: [AppController],
   providers: [AppService],

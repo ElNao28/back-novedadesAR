@@ -1,17 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
+import { Column, Entity, PrimaryGeneratedColumn,OneToMany } from "typeorm";
+import { Venta } from "src/ventas/entities/venta.entity";
 @Entity('administrador')
 export class Admin {
     @PrimaryGeneratedColumn()
     id: number;
-    @Column()
+    @Column({nullable:true})
     nombre: string;
-    @Column()
+    @Column({nullable:true})
     lastName: string;
-    @Column()
+    @Column({nullable:true})
     motherLastname: string;
-    @Column()
+    @Column({nullable:true})
     email: string;
-    @Column()
+    @Column({nullable:true})
     password: string;
+
+    @OneToMany(()=> Venta, chat => chat.admin)
+    chat:Venta[]
 }
+ 

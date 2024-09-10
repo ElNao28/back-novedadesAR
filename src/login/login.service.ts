@@ -22,15 +22,15 @@ export class LoginService {
 
     async validLogin(createLoginDto: ValidLoginDto) {
 
-      const data = this.userService.getUser(createLoginDto.email)
-      const payload = { sub: (await data).id, username: (await data).name };
+      const data = await this.userService.getUser(createLoginDto.email)
+      const payload = { sub: data.id, username: data.name,rol:'user' };
       const tocken =  this.jwtService.sign(payload);
       const res = this.jwtService.decode(tocken);
-
-      if(await bcryptjs.compare(createLoginDto.password, (await data).password))
+      console.log(tocken)
+      if(await bcryptjs.compare(createLoginDto.password, data.password))
         return{
           valid: true,
-          token: (await data).id
+          token: tocken
         }
       else
         return {

@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, In, LessThan, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import * as cloudinary from 'cloudinary';
 
 import * as fs from 'fs';
@@ -17,9 +17,14 @@ import { Items } from './entities/Items.interface';
 import { Imagenes } from './entities/imagenes.entity';
 import { Comentarios } from './entities/comentatios.entity';
 import { User } from 'src/users/entities/user.entity';
+import { catchError, map } from 'rxjs/operators';
 
 import Stripe from 'stripe';
+import { JwtService } from '@nestjs/jwt';
+import { HttpService } from '@nestjs/axios';
+import { throwError } from 'rxjs';
 import { Venta } from 'src/ventas/entities/venta.entity';
+import { DetallesVenta } from 'src/ventas/entities/detalles_venta.entity';
 const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
 
 cloudinary.v2.config({
@@ -34,6 +39,9 @@ export class ProductsService {
     @InjectRepository(Imagenes) private imagenesRepository: Repository<Imagenes>,
     @InjectRepository(Comentarios) private comentariosRepository: Repository<Comentarios>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Venta) private ventaRepository: Repository<Venta>,
+    @InjectRepository(DetallesVenta) private detallesVentaRepository: Repository<DetallesVenta>,
+    private httpService: HttpService,
     private ventasService: VentasService) { }
 
   async create(createProductDto: CreateProductDto, file: { imagen?: Express.Multer.File[] }) {
@@ -157,6 +165,25 @@ export class ProductsService {
       caballero: caballero
     }
 
+  }
+  async findProductsByPage(page: number) {
+    let limit: number = 12
+    const foundProducts = await this.producRepository.findAndCount({
+      where: {
+        status: "activo"
+      },
+      order: {
+        id: 'DESC'
+      },
+      take: limit,
+      skip: (page) * limit,
+      relations: ['imagen']
+    })
+    return {
+      message: 'exito',
+      status: HttpStatus.OK,
+      data: foundProducts
+    }
   }
   findAllProducts() {
     return this.producRepository.find({
@@ -316,14 +343,14 @@ export class ProductsService {
     });
     return foundProducts;
   }
-
   async getProductByFilter(datos: { dama: boolean, caballero: boolean, datos: [] }) {
     let productsFilter = [];
     let productsSend = [];
     for (let i = 0; i < datos.datos.length; i++) {
       const foundProducts = await this.producRepository.find({
         where: {
-          tipo: datos.datos[i]
+          tipo: datos.datos[i],
+          status:'activo'
         },
         relations: ['imagen']
       });
@@ -352,7 +379,7 @@ export class ProductsService {
           productsSend.push(productsFilter[i]);
         }
       }
-      return productsSend;
+      return productsSend.slice();
     }
     else if (datos.caballero === false && datos.dama === true) {
       for (let i = 0; i < productsFilter.length; i++) {
@@ -371,7 +398,8 @@ export class ProductsService {
     return this.producRepository.find({
       where: {
         categoria: gender,
-        tipo: tipo
+        tipo: tipo,
+        status:'activo'
       },
       relations: ['imagen']
     })
@@ -425,6 +453,34 @@ export class ProductsService {
       data: productsWithDes
     }
   }
+  async updateDescuento(id: number, descuento: number) {
+    const foundProduct = await this.producRepository.findOneBy({ id })
+    if (!foundProduct) return {
+      message: 'Producto no encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    await this.producRepository.update(id, {
+      descuento
+    });
+    return {
+      message: 'exito',
+      status: HttpStatus.OK
+    }
+  }
+  async updateStock(id: number, stock: number) {
+    const foundProduct = await this.producRepository.findOneBy({ id })
+    if (!foundProduct) return {
+      message: 'Producto no encontrado',
+      status: HttpStatus.NOT_FOUND
+    }
+    await this.producRepository.update(id, {
+      stock
+    });
+    return {
+      message: 'exito',
+      status: HttpStatus.OK
+    }
+  }
   async pagoStripe(data: ResDto[]) {
     let url: string = '';
     let items = [];
@@ -452,8 +508,8 @@ export class ProductsService {
       payment_method_types: ['card'],
       line_items: items,
       mode: 'payment',
-      success_url: 'http://localhost:4200/#/inicio',
-      cancel_url: 'http://localhost:4200/#/inicio',
+      success_url: 'https://novedades-ar.netlify.app/#/full',
+      cancel_url: 'https://novedades-ar.netlify.app/#/inicio',
       expires_at: Math.floor(Date.now() / 1000) + 1800
 
     }).then(session => {
@@ -462,6 +518,7 @@ export class ProductsService {
       data.forEach(data => {
         total = data.precio * data.precio
       });
+      //const idUser = this.jwtService.decode(data[0].idUser)
       this.ventasService.addVentaStripe(+data[0].idUser, itemsVenta, total, data[0].idCard, session.id)
     }).catch(error => {
       console.error(error);
@@ -473,4 +530,123 @@ export class ProductsService {
   async savePago(idSession: string) {
     this.ventasService.confirmVenta(idSession)
   }
+  async getProductByTypeUser(typeUser: number) {
+    try {
+      const foundUser = await this.userRepository.findOne({
+        where: {
+          id: typeUser
+        }
+      });
+      const ventas = await this.ventaRepository.find({
+        where: {
+          usuario: foundUser
+        },
+        order: {
+          id: 'DESC'
+        },
+        take: 2
+      });
+      const detalleVenta = await this.detallesVentaRepository.find({
+        where: {
+          venta: ventas[0]
+        },
+        relations: ['producto'],
+        order: {
+          id: 'DESC'
+        },
+        take: 1
+      });
+      const ultVenta = detalleVenta[0]
+      const payload = {
+        descuento: ultVenta.descuento,
+        precio: ultVenta.precio,
+        categoria: ultVenta.producto.categoria,
+        tipo: ultVenta.producto.tipo,
+        rating: ultVenta.producto.rating,
+        calificacion: ultVenta.calificacion,
+        cantidad: ultVenta.cantidad,
+        total: ventas[0].total_venta,
+        genero: foundUser.gender
+      }
+      const tipoCliente = await this.httpService.post<{ tipo_cliente: number }>('https://server-m3.onrender.com/predict', payload).pipe(
+        map(response => response.data.tipo_cliente),
+        catchError(error => {
+          console.error('Error occurred:', error);
+          return throwError(() => new Error('Error making POST request'));
+        })
+      ).toPromise();
+
+      let productos;
+
+      switch (tipoCliente) {
+        case 0:
+          console.log('tipo 0');
+          productos = await this.producRepository.find({
+            where: {
+              descuento: LessThanOrEqual(10),
+              precio: LessThan(100),
+              rating: LessThanOrEqual(3),
+              status:'activo'
+            },
+            relations:['imagen'],
+            take: 9
+          });
+          break;
+
+        case 1:
+          console.log('tipo 1');
+          let gender;
+          if (foundUser.gender === 'F')
+            gender = 'M'
+          else
+            gender = 'H'
+          productos = await this.producRepository.find({
+            where: {
+              descuento: Between(25, 50),
+              precio: Between(180, 500),
+              categoria: gender,
+              rating: Between(3, 5),
+              status:'activo'
+            },
+            relations:['imagen'],
+            take: 9
+          });
+          break;
+        case 2:
+          console.log('tipo 2');
+          productos = await this.producRepository.find({
+            where: {
+              descuento: Between(10, 25),
+              precio: Between(60, 300),
+              rating: MoreThan(4),
+              status:'activo'
+            },
+            relations:['imagen'],
+            take: 9
+          });
+          break;
+
+        default:
+          return {
+            message: 'Tipo de usuario no válido',
+            status: HttpStatus.BAD_REQUEST,
+            data: []
+          };
+      }
+
+      return {
+        message: 'Éxito',
+        status: HttpStatus.OK,
+        data: productos
+      };
+
+    } catch (error) {
+      return {
+        message: 'Error al obtener los productos',
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        data: []
+      };
+    }
+  }
+
 }

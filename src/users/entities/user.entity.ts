@@ -7,7 +7,6 @@ import { Ubicacion } from "./ubicacion.entity";
 import { Rol } from "./rol.entity";
 import { Venta } from "src/ventas/entities/venta.entity"
 import { Comentarios } from "src/products/entities/comentatios.entity";
-
 @Entity({name: 'users'})
 export class User {
 

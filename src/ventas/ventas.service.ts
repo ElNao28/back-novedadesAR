@@ -9,6 +9,8 @@ import { DetallesVenta } from './entities/detalles_venta.entity';
 import { Items } from 'src/products/entities/Items.interface';
 import { Carrito } from 'src/carrito/entities/carrito.entity';
 import { Envios } from './entities/envios.entity';
+import { Chat } from "src/test-msj/entities/chat.entity";
+import { Admin } from "src/admin/entities/admin.entity";
 
 @Injectable()
 export class VentasService {
@@ -20,6 +22,8 @@ export class VentasService {
         @InjectRepository(Carrito) private carritoRepository: Repository<Carrito>,
         @InjectRepository(Envios) private enviosRepository: Repository<Envios>,
         @InjectRepository(Comentarios) private comentarioRepository: Repository<Comentarios>,
+        @InjectRepository(Chat) private chatRepository:Repository<Chat>,
+        @InjectRepository(Admin) private adminRepository:Repository<Admin>,
     ) { }
     async addVenta(idUser: number, products: Items[], idCard: string, total: number, fecha: string) {
         console.log(idUser, products, idCard, total, fecha)
@@ -127,7 +131,7 @@ export class VentasService {
                 console.log("no borra")
                 return
             }
-            for(let i = 0; i <foundVenta.detallesVenta.length;i++){
+            for (let i = 0; i < foundVenta.detallesVenta.length; i++) {
                 await this.detallesVenta.delete(foundVenta.detallesVenta[i].id)
             }
             await this.ventaRepository.delete(foundVenta.id)
@@ -138,12 +142,17 @@ export class VentasService {
             where: {
                 idSession
             },
-            relations:['detallesVenta','detallesVenta.producto']
+            relations: ['detallesVenta', 'detallesVenta.producto', 'usuario']
         });
+        const foundAdmin = await this.adminRepository.findOneBy({id:1});
+        const newChat = await this.chatRepository.create()
+        const saveChat = await this.chatRepository.save(newChat)
         this.ventaRepository.update(foundVenta.id, {
-            estado: 'Fenvio'
-        })
-        for(let i = 0; i < foundVenta.detallesVenta.length;i++){
+            estado: 'Fenvio',
+            chat: saveChat,
+            admin:foundAdmin
+        });
+        for (let i = 0; i < foundVenta.detallesVenta.length; i++) {
             let newStock = 0;
             const foundProduct = await this.productRepository.findOne({
                 where: {
@@ -157,12 +166,12 @@ export class VentasService {
                 stock: newStock
             });
         }
-        if(foundVenta.idCarrito === 'null'){
+        if (foundVenta.idCarrito === 'null') {
             return
         }
-        else{
-            await this.carritoRepository.update(+foundVenta.idCarrito,{
-                estado:'inactivo'
+        else {
+            await this.carritoRepository.update(+foundVenta.idCarrito, {
+                estado: 'inactivo'
             });
             const newCard = this.carritoRepository.create({
                 usuario: foundVenta.usuario
@@ -231,27 +240,6 @@ export class VentasService {
             message: 'exito',
             status: HttpStatus.OK
         }
-    }
-    async dataByDataSet() {
-        const foundDetalles = await this.detallesVenta.find({
-            relations: ['producto', 'venta']
-        });
-
-        const filterByDataSet = foundDetalles.map((data) => {
-            return {
-                id: data.id,
-                producto: data.producto.nombre_producto,
-                descuento: data.descuento,
-                precio: data.precio,
-                stock: data.producto.stock,
-                categoria: data.producto.categoria,
-                tipo: data.producto.tipo,
-                rating: data.producto.rating,
-                fecha_venta: data.venta.fecha_venta,
-                cantidad: data.cantidad
-            }
-        })
-        return filterByDataSet
     }
     async addRaking(idVenta: number, raking: number, opinion: string) {
         const foundDetalles = await this.detallesVenta.findOne({
@@ -358,6 +346,43 @@ export class VentasService {
         return {
             message: 'Exito',
             status: HttpStatus.OK
+        }
+    }
+
+
+    async dataByDataSet() {
+        const foundDetalles = await this.detallesVenta.find({
+            relations: ['producto', 'venta','venta.usuario'],
+
+        }
+        );
+        const filterByDataSet = foundDetalles.map((data) => {
+            return {
+                id: data.venta.usuario.id,
+                descuento: data.descuento,
+                precio: data.precio,
+                categoria: data.producto.categoria,
+                tipo: data.producto.tipo,
+                rating: data.producto.rating,
+                calificacion:data.calificacion,
+                cantidad: data.cantidad,
+                total:data.venta.total_venta,
+                genero:data.venta.usuario.gender,
+                fecha_venta: data.venta.fecha_venta
+                
+            }
+        })
+        return filterByDataSet
+    }
+
+    async canceledVenta(id:number){
+        console.log(id)
+        await this.ventaRepository.update(id,{
+            estado:'canceled'
+        });
+        return{
+            message:'Exito',
+            status:HttpStatus.OK
         }
     }
 }

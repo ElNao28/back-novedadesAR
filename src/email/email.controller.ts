@@ -28,4 +28,8 @@ export class EmailController {
          }
        }
   }
+  @Post('promociones')
+  sendMailPromociones(@Body()data:{ids:number[]}){
+    return this.emailService.sendMailPromociones(data.ids)
+  }
 }

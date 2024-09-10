@@ -2,6 +2,9 @@ import { Entity, PrimaryGeneratedColumn, OneToOne, ManyToOne, OneToMany, JoinCol
 import { User } from "src/users/entities/user.entity"
 import { DetallesVenta } from "./detalles_venta.entity"
 import { Envios } from "./envios.entity";
+import { Chat } from "src/test-msj/entities/chat.entity";
+import { Admin } from "src/admin/entities/admin.entity";
+
 @Entity('ventas')
 export class Venta {
     @PrimaryGeneratedColumn()
@@ -30,5 +33,12 @@ export class Venta {
 
     @OneToOne(() => Envios)
     @JoinColumn()
-    envio: Envios
+    envio: Envios;
+
+    @OneToOne(() => Chat)
+    @JoinColumn()
+    chat: Chat;
+
+    @ManyToOne(()=>Admin,admin => admin.chat)
+    admin:Admin
 } 

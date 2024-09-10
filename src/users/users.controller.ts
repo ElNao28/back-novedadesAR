@@ -67,4 +67,8 @@ export class UsersController {
   getDataUbicacion(@Param('id') id: string) {
     return this.usersService.getDataUbicacion(parseInt(id));
   }
+  @Post('dataSet')
+  usersDta(@Body()data:{ids:number[]}){
+    return this.usersService.getUsersTop(data.ids)
+  }
 }

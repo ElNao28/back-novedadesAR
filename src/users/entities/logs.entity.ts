@@ -5,15 +5,15 @@ import { User } from "./user.entity";
 export class Logs{
     @PrimaryGeneratedColumn()
     id:number;
-    @Column()
+    @Column({nullable:true})
     accion:string;
-    @Column()
+    @Column({nullable:true})
     ip:string;
-    @Column()
+    @Column({nullable:true})
     url_solicitada:string;
-    @Column()
+    @Column({nullable:true})
     status:number;
-    @Column()
+    @Column({nullable:true})
     fecha: string;
 
     @ManyToOne(()=>User, user => user.logs)

@@ -1,7 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { VentasService } from './ventas.service';
-import { CreateVentaDto } from './dto/create-venta.dto';
-import { UpdateVentaDto } from './dto/update-venta.dto';
 
 @Controller('ventas')
 export class VentasController {
@@ -35,5 +33,9 @@ export class VentasController {
   @Post('venta-complete')
   ventaComplete(@Body()data:{idEnvio:number,fecha:Date,idVenta:number}){
     return this.ventasService.ventaComplete(data);
+  }
+  @Post('canceled')
+  canceledVenta(@Body()data:{id:number}){
+    return this.ventasService.canceledVenta(data.id)
   }
 }

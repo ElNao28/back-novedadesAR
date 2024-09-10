@@ -12,6 +12,15 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
 
+  @Get('products-by-type/:id')
+  getProductByTypeUser(@Param('id')type:string){
+    console.log('idCliente: '+type)
+    return this.productsService.getProductByTypeUser(+type)
+  }
+  @Get('page/:id')
+  getProductsByPage(@Param('id')id:string){
+    return this.productsService.findProductsByPage(+id)
+  }
   @Get('get-promociones')
   getProductsByDescuento() {
     return this.productsService.getProductsByDescuento();
@@ -115,5 +124,14 @@ export class ProductsController {
   @Post('webhook')
   async preubaW(@Body() data) {
     this.productsService.savePago(data.data.object.id)
+  }
+  @Patch('update-descuento')
+  updateDescuento(@Body()data:{descuento:number,id:number}){
+    return this.productsService.updateDescuento(data.id,data.descuento);
+  }
+  @Patch('update-stock')
+  updateStock(@Body()data:{id:number,stock:number}){
+    console.log(data)
+    return this.productsService.updateStock(data.id,data.stock);
   }
 }
