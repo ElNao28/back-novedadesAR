@@ -109,7 +109,7 @@ export class ProductsService {
   async findNovedades() {
     let productsWithDes = [];
     const nuevo = await this.producRepository.find({
-      where: {
+      where: { 
         status: "activo"
       },
       order: {

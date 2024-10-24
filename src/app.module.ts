@@ -24,7 +24,7 @@ import { AboutUsModule } from './about-us/about-us.module';
       password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
       database: 'railway',//railway 
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, 
+      synchronize: true,
     }),
     UsersModule,
     EmailModule,

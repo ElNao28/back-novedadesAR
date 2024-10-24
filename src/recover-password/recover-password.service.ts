@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRecoverPasswordDto } from './dto/create-recover-password.dto';
 import { UsersService } from 'src/users/users.service';
 import { CheckAnswer } from './interface/checkAnswer.interface';
-
+ 
 @Injectable()
 export class RecoverPasswordService {
   constructor(private userService:UsersService){}
