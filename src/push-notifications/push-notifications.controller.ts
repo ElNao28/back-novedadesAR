@@ -1,5 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { PushNotificationsService } from './push-notifications.service';
+import { NotificationDto } from './dto/notification.dto';
 
 @Controller('push-notifications')
 export class PushNotificationsController {
@@ -7,11 +8,12 @@ export class PushNotificationsController {
 
   @Post('save')
   public saveToken(@Body()token){
-    console.log(token);
+    this.pushNotificationsService.saveTokenToBrowser(token);
   }
 
   @Post('send')
-  public sendNotification(@Body() notification){
-    console.log(notification);
+  public sendNotification(@Body() notification:NotificationDto){
+    console.log("si envia")
+    return this.pushNotificationsService.sendPushNotification(notification);
   }
 }

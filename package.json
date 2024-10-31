@@ -30,6 +30,7 @@
     "@nestjs/typeorm": "^10.0.1",
     "@nestjs/websockets": "^10.3.10",
     "@types/stripe": "^8.0.417",
+    "@types/web-push": "^3.6.4",
     "axios": "^1.7.3",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.0.3",
@@ -41,7 +42,8 @@
     "rxjs": "^7.8.1",
     "socket.io": "^4.7.5",
     "stripe": "^16.2.0",
-    "typeorm": "^0.3.19"
+    "typeorm": "^0.3.19",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

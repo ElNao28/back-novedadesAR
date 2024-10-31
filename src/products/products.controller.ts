@@ -127,6 +127,7 @@ export class ProductsController {
   }
   @Patch('update-descuento')
   updateDescuento(@Body()data:{descuento:number,id:number}){
+    console.log("aqui")
     return this.productsService.updateDescuento(data.id,data.descuento);
   }
   @Patch('update-stock')
