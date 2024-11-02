@@ -12,6 +12,11 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
 
+  @Get('search-by-name/:name')
+  searchProductByName(@Param('name')name:string){
+    return this.productsService.searchProductsByName(name);
+  }
+
   @Get('products-by-type/:id')
   getProductByTypeUser(@Param('id')type:string){
     console.log('idCliente: '+type)
