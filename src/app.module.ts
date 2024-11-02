@@ -19,7 +19,7 @@ import { PushNotificationsModule } from './push-notifications/push-notifications
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '//monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net
+      host: 'monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net
       port: 32140,//32140 3306
       username: 'root',
       password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
