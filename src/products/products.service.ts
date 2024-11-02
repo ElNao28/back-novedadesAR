@@ -38,10 +38,15 @@ import { HttpService } from '@nestjs/axios';
 import { throwError } from 'rxjs';
 import { Venta } from 'src/ventas/entities/venta.entity';
 import { DetallesVenta } from 'src/ventas/entities/detalles_venta.entity';
+<<<<<<< HEAD
 import axios from 'axios';
 const stripe = new Stripe(
   'sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt',
 );
+=======
+import { all } from 'axios';
+const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
+>>>>>>> test
 
 cloudinary.v2.config({
   cloud_name: 'dy5jdb6tv',
@@ -728,4 +733,23 @@ export class ProductsService {
       };
     }
   }
+
+  public async searchProductsByName(name:string){
+
+    const allProducts = await  this.producRepository.find();
+    let filterProducts = [];
+
+    for(let i = 0; i<allProducts.length;i++){
+      if(allProducts[i].nombre_producto.includes(name)){
+        filterProducts.push(allProducts[i]);
+      }
+    }
+
+    return {
+      message:"Exito",
+      status:HttpStatus.OK,
+      data:filterProducts
+    }
+  }
+
 }
