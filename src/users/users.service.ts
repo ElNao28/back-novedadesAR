@@ -259,6 +259,7 @@ export class UsersService {
       where: {
         id: idUser,
       },
+      relations: ['photo'],
     });
     return {
       status: HttpStatus.OK,
@@ -269,6 +270,7 @@ export class UsersService {
         ' ' +
         foundUser.motherLastname,
       email: foundUser.email,
+      url_photo: foundUser.photo.url,
     };
   }
   async getDataPersonal(idUser: number) {
@@ -443,6 +445,13 @@ export class UsersService {
     });
     if (foundUser.photo) {
       console.log('Entra aqui');
+      const idPhoto = foundUser.photo.url;
+      const idImg = idPhoto.split("/")[8].split(".")[0];
+      await cloudinary.v2.api
+        .delete_resources(
+          [`photo/${idImg}`],
+          { type: 'upload', resource_type: 'image' },
+        )
       await this.photoRepository.update(foundUser.photo.id, {
         url: uploadResult.secure_url,
       });
