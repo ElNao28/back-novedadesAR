@@ -7,6 +7,7 @@ import { Ubicacion } from "./ubicacion.entity";
 import { Rol } from "./rol.entity";
 import { Venta } from "src/ventas/entities/venta.entity"
 import { Comentarios } from "src/products/entities/comentatios.entity";
+import { PhotoProfile } from "./photoProfile.entity";
 @Entity({name: 'users'})
 export class User {
 
@@ -42,6 +43,10 @@ export class User {
     @OneToOne(()=>Intentos)
     @JoinColumn()
     intentos:Intentos;
+
+    @OneToOne(()=>PhotoProfile)
+    @JoinColumn()
+    photo:PhotoProfile;
 
     @OneToOne(()=>Ubicacion)
     @JoinColumn()

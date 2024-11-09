@@ -17,7 +17,6 @@ import {
   MoreThan,
   Repository,
 } from 'typeorm';
-import * as cloudinary from 'cloudinary';
 
 import * as fs from 'fs';
 import * as os from 'os';
@@ -33,7 +32,6 @@ import { User } from 'src/users/entities/user.entity';
 import { catchError, map } from 'rxjs/operators';
 
 import Stripe from 'stripe';
-import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
 import { throwError } from 'rxjs';
 import { Venta } from 'src/ventas/entities/venta.entity';
@@ -41,12 +39,14 @@ import { DetallesVenta } from 'src/ventas/entities/detalles_venta.entity';
 import axios from 'axios';
 const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
 
-
+import * as cloudinary from 'cloudinary';
 cloudinary.v2.config({
   cloud_name: 'dy5jdb6tv',
   api_key: '248559475624584',
   api_secret: 'eLssEgrbq41bWTwhhKKpRZK-UBQ',
 });
+
+
 @Injectable()
 export class ProductsService {
   constructor(

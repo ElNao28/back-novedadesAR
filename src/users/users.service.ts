@@ -10,8 +10,16 @@ import { CreateUbicacionDto } from './dto/create-ubicacion.dto';
 import { Ubicacion } from './entities/ubicacion.entity';
 import { Rol } from './entities/rol.entity';
 import { Carrito } from 'src/carrito/entities/carrito.entity';
-import { LoginService } from '../login/login.service';
 import { Logs } from './entities/logs.entity';
+
+
+import * as cloudinary from 'cloudinary';
+cloudinary.v2.config({
+  cloud_name: 'dy5jdb6tv',
+  api_key: '248559475624584',
+  api_secret: 'eLssEgrbq41bWTwhhKKpRZK-UBQ',
+});
+
 
 @Injectable()
 export class UsersService {
@@ -94,7 +102,6 @@ export class UsersService {
 
     this.userRepository.save(userFound);
   }
-
   async createUbicacionTable(data: CreateUbicacionDto, emailUser: string) {
     const userFound = await this.userRepository.findOne({
       where: {
@@ -110,7 +117,6 @@ export class UsersService {
 
     this.userRepository.save(userFound);
   }
-
   async addRol(emailUser: string) {
     const foundRol = await this.rolRepository.findOne({
       where: {
@@ -151,7 +157,6 @@ export class UsersService {
     }));
     return result
   }
-
   getUser(email: string) {
     const user = this.userRepository.findOne({
       where: {
@@ -162,7 +167,6 @@ export class UsersService {
     });
     return user;
   }
-
   getUserById(id: number) {
     const user = this.userRepository.findOne({
       where: {
@@ -171,7 +175,6 @@ export class UsersService {
     });
     return user;
   }
-
   async updatePassword(email: string, updateData: { password: string, ip: string, fecha: string }) {
     const dataUser = await this.getUser(email)
     const { password, ...data } = updateData;
@@ -193,7 +196,6 @@ export class UsersService {
       };
     }
   }
-
   async updateUbicacion(idUser: number, dataUbic: CreateUbicacionDto) {
     const foundUser = await this.userRepository.findOne({
       where: {
@@ -209,7 +211,6 @@ export class UsersService {
       status: HttpStatus.OK
     }
   }
-
   async getIntentos(idUser: number) {
     const dataUser = await this.userRepository.findOne({
       where: {
@@ -224,12 +225,10 @@ export class UsersService {
     })
     return intentosUser.intentos;
   }
-
   DeleteUser(id: number) {
     const deleteUser = this.userRepository.delete({ id: id })
     return deleteUser;
   }
-
   async getDomicio(id: number) {
     const foundUser = await this.userRepository.findOne({
       where: {
@@ -345,7 +344,6 @@ export class UsersService {
       referencia: foundUser.ubicacion.referencia
     }
   }
-
   async createlogs(data: { idUser: number, accion: string, ip: string, url: string, status: number, fecha: string }) {
     const foundUser = await this.userRepository.findOne({
       where: {
@@ -362,7 +360,6 @@ export class UsersService {
     });
     this.logsRepository.save(newLog);
   }
-
   async checkUbicacion(id: number) {
     const foundUser = await this.userRepository.findOne({
       where: {
@@ -395,6 +392,26 @@ export class UsersService {
       message:'Exito',
       status:HttpStatus.OK,
       data:usersData
+    }
+  }
+
+  async updatePhoto(data:string){
+       const uploadResult = await cloudinary.v2.uploader
+       .upload(
+           `${data}`, {
+               folder:'photo'
+           }
+       )
+       .catch((error) => {
+            return {
+              message:"Error",
+              status:HttpStatus.CONFLICT
+            }
+       });
+    console.log(uploadResult);
+    return{
+      message:"Exito",
+      status:HttpStatus.OK
     }
   }
 }
