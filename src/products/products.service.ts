@@ -517,7 +517,7 @@ export class ProductsService {
     if (descuento > 0) {
       await axios
         .post(
-          'https://c175-187-249-108-38.ngrok-free.app/push-notifications/send',
+          'https://back-novedadesar-production.up.railway.app/push-notifications/send',
           {
             name: foundProduct.nombre_producto,
             image: foundProduct.imagen[0].url_imagen,
