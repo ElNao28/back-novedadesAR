@@ -71,8 +71,8 @@ export class UsersController {
   usersDta(@Body()data:{ids:number[]}){
     return this.usersService.getUsersTop(data.ids)
   }
-  @Post('update-photo',)
-  updatePhoto(@Body()photo:{url:string}){
-    return this.usersService.updatePhoto(photo.url);
+  @Patch('update-photo',)
+  updatePhoto(@Body()data:{url:string,id:number}){
+    return this.usersService.updatePhoto(data.url,data.id);
   }
 }
