@@ -16,28 +16,28 @@ import { AboutUsModule } from './about-us/about-us.module';
 import { PushNotificationsModule } from './push-notifications/push-notifications.module';
 
 @Module({
+  // imports: [
+    // TypeOrmModule.forRoot({
+      // type: 'mysql',
+      // host: 'localhost',
+      // port: 3306,
+      // username: 'root',
+      // password: '',
+      // database: 'railway',
+      // entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      // synchronize: true,
+    // }),
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
+      host: 'monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net
+      port: 32140,//32140 3306
       username: 'root',
-      password: '',
-      database: 'railway',
+      password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
+      database: 'railway',//railway 
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-  // imports: [
-  //   TypeOrmModule.forRoot({
-  //     type: 'mysql',
-  //     host: 'monorail.proxy.rlwy.net',//monorail.proxy.rlwy.net
-  //     port: 32140,//32140 3306
-  //     username: 'root',
-  //     password: 'SOZqfoANqhNxIbtccwkusRwjpdvxfsKf',//SOZqfoANqhNxIbtccwkusRwjpdvxfsKf
-  //     database: 'railway',//railway 
-  //     entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  //     synchronize: true,
-  //   }),
     UsersModule,
     EmailModule,
     LoginModule,
