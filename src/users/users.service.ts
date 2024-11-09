@@ -270,7 +270,7 @@ export class UsersService {
         ' ' +
         foundUser.motherLastname,
       email: foundUser.email,
-      url_photo: foundUser.photo.url,
+      url_photo: foundUser.photo != null ? foundUser.photo.url :'',
     };
   }
   async getDataPersonal(idUser: number) {
