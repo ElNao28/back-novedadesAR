@@ -7,6 +7,7 @@ import { Ubicacion } from "./ubicacion.entity";
 import { Rol } from "./rol.entity";
 import { Venta } from "src/ventas/entities/venta.entity"
 import { Comentarios } from "src/products/entities/comentatios.entity";
+import { Rating } from '../../rating/entities/rating.entity';
 import { PhotoProfile } from "./photoProfile.entity";
 @Entity({name: 'users'})
 export class User {
@@ -33,6 +34,8 @@ export class User {
     answer:string;
     @Column()
     codeAlexa:string;
+    @Column({default:false})
+    isRating:boolean;
 
     @ManyToOne(()=>Question, question => question.users)
     question:Question;
@@ -63,4 +66,7 @@ export class User {
 
     @OneToMany(()=>Comentarios,comentarios => comentarios.usuario)
     comentarios:Comentarios[];
+
+    @OneToMany(()=>Rating,rating => rating.usuario)
+    calificaciones:Rating[];
 }

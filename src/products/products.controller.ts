@@ -130,6 +130,7 @@ export class ProductsController {
 
   @Post('webhook')
   async preubaW(@Body() data) {
+    console.log("Hola")
     this.productsService.savePago(data.data.object.id)
   }
   @Patch('update-descuento')
