@@ -14,6 +14,7 @@ import { AdminModule } from './admin/admin.module';
 import { TestMsjModule } from './test-msj/test-msj.module';
 import { AboutUsModule } from './about-us/about-us.module';
 import { PushNotificationsModule } from './push-notifications/push-notifications.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   // imports: [
@@ -49,7 +50,8 @@ import { PushNotificationsModule } from './push-notifications/push-notifications
     AdminModule,
     AboutUsModule,
     TestMsjModule,
-    PushNotificationsModule
+    PushNotificationsModule,
+    StripeModule
   ],
   controllers: [AppController],
   providers: [AppService],
