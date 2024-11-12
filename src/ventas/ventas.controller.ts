@@ -5,6 +5,11 @@ import { VentasService } from './ventas.service';
 export class VentasController {
   constructor(private readonly ventasService: VentasService) {}
 
+
+  @Get('check-venta/:id')
+  checkVenta(@Param('id')id:string){
+    return this.ventasService.checkVenta(+id);
+  }
   @Get('get-comentarios/:id')
   getComentarios(@Param('id')idUser:string){
     return this.ventasService.getComentariosByid(+idUser)

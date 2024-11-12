@@ -385,4 +385,25 @@ export class VentasService {
             status:HttpStatus.OK
         }
     }
+
+    async checkVenta(id:number){
+        const founduser = await this.userRepository.findOne({
+            where:{
+                id
+            },
+            relations:['ventas']
+        });
+        if(founduser.ventas || founduser.ventas.length > 0){
+            return {
+                status:HttpStatus.OK,
+                isShopping:true
+            }
+        }
+        else{
+            return {
+                status:HttpStatus.OK,
+                isShopping:true
+            }
+        }
+    }
 }
