@@ -393,7 +393,7 @@ export class VentasService {
             },
             relations:['ventas']
         });
-        if(founduser.ventas.length > 0){
+        if(founduser.ventas.length > 0 && founduser.isRating != true){
             return {
                 status:HttpStatus.OK,
                 isShopping:true
