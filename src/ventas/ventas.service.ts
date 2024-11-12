@@ -393,7 +393,7 @@ export class VentasService {
             },
             relations:['ventas']
         });
-        if(founduser.ventas || founduser.ventas.length > 0){
+        if(founduser.ventas.length > 0){
             return {
                 status:HttpStatus.OK,
                 isShopping:true
@@ -401,8 +401,8 @@ export class VentasService {
         }
         else{
             return {
-                status:HttpStatus.OK,
-                isShopping:true
+                status:HttpStatus.NOT_FOUND,
+                isShopping:false
             }
         }
     }
