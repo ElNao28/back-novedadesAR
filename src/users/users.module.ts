@@ -9,10 +9,11 @@ import { Question } from './entities/question.entity';
 import { Rol } from './entities/rol.entity';
 import { Ubicacion } from './entities/ubicacion.entity';
 import { Carrito } from 'src/carrito/entities/carrito.entity'
+import { PhotoProfile } from './entities/photoProfile.entity';
 
 @Module({
   imports:[TypeOrmModule.forFeature([
-    User,Intentos, Logs, Question,Rol,Ubicacion,Carrito
+    User,Intentos, Logs, Question,Rol,Ubicacion,Carrito,PhotoProfile
   ]),],
   controllers: [UsersController],
   providers: [UsersService],

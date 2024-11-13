@@ -7,10 +7,17 @@ import { dataPayment } from './interfaces/dataPayment.interface';
 import { UpdateProductDto } from './dto/update-product.dto';
 import Stripe from 'stripe';
 const stripe = new Stripe('sk_test_51Os6QyP0xF5rSbalHiltPXqBNbewYYo0T3P02CikwxwUFGLXZqnfNoHZyC8P03TWCTUxypvbrTQqigaWoWx5ctlf00XocCc2bt');
+
+
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
+
+  @Get('search-by-name/:name')
+  searchProductByName(@Param('name')name:string){
+    return this.productsService.searchProductsByName(name);
+  }
 
   @Get('products-by-type/:id')
   getProductByTypeUser(@Param('id')type:string){
@@ -123,10 +130,12 @@ export class ProductsController {
 
   @Post('webhook')
   async preubaW(@Body() data) {
+    console.log("Hola")
     this.productsService.savePago(data.data.object.id)
   }
   @Patch('update-descuento')
   updateDescuento(@Body()data:{descuento:number,id:number}){
+    console.log("aqui")
     return this.productsService.updateDescuento(data.id,data.descuento);
   }
   @Patch('update-stock')
