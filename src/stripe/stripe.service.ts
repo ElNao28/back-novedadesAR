@@ -37,9 +37,10 @@ export class StripeService {
       { apiVersion: '2024-10-28.acacia' },
     );
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: total * 1000,
+      amount: total * 100,
       currency: 'mxn',
       customer: customer.id,
+      
     });
     this.ventasService.addVentaStripe(
       +data[0].idUser,
