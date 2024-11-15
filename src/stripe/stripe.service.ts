@@ -15,24 +15,29 @@ export class StripeService {
   async pagoStripe(data: ResDto[]) {
 
     let itemsVenta = [];
-    itemsVenta = data.map((data) => {
+    itemsVenta = data.map((item) => {
       return {
-        idProducto: data.id,
-        cantidad: data.cantidad,
+        idProducto: item.id,
+        cantidad: item.cantidad,
       };
     });
     let total = 0;
-    data.forEach((data) => {
-      total = data.precio += data.precio;
-    });
-
+    if(data.length === 1){
+      total = data[0].precio * +data[0].cantidad;
+    }
+    else{
+      data.forEach((data) => {
+        total = data.precio += data.precio;
+      });
+    }
+    console.log(total)
     const customer = await stripe.customers.create();
     const ephemeralKey = await stripe.ephemeralKeys.create(
       { customer: customer.id },
       { apiVersion: '2024-10-28.acacia' },
     );
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: total,
+      amount: total * 1000,
       currency: 'mxn',
       customer: customer.id,
     });

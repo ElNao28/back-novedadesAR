@@ -8,8 +8,6 @@ import {
   Delete,
 } from '@nestjs/common';
 import { StripeService } from './stripe.service';
-import { CreateStripeDto } from './dto/create-stripe.dto';
-import { UpdateStripeDto } from './dto/update-stripe.dto';
 
 
 @Controller('stripe')
