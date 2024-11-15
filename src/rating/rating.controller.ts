@@ -7,6 +7,10 @@ import { UpdateRatingDto } from './dto/update-rating.dto';
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
+  @Get('')
+  findAll() {
+    return this.ratingService.getRating();
+  }
   @Post('create/:id')
   create(@Param('id')id:string,@Body() createRatingDto: CreateRatingDto) {
     return this.ratingService.create(createRatingDto, +id);

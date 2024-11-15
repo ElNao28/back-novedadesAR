@@ -34,4 +34,43 @@ export class RatingService {
       status: HttpStatus.OK,
     };
   }
+  async getRating(){
+    let cantidadExp:number[] = [];
+    let cantidadDetall:number[] = [];
+    let cantidadOpt:number[] = [];
+    
+    for (let i = 1; i <= 5; i++) {
+      const rating = await this.ratingRepository.find({
+        where:{
+          expCompra:i
+        }
+      });
+      cantidadExp.push(rating.length);
+    }
+    for (let i = 1; i <= 5; i++) {
+      const rating = await this.ratingRepository.find({
+        where:{
+          detalles:i
+        }
+      });
+      cantidadDetall.push(rating.length)
+    }
+    for (let i = 1; i <= 5; i++) {
+      const rating = await this.ratingRepository.find({
+        where:{
+          satOptimizacion:i
+        }
+      });
+      cantidadOpt.push(rating.length)
+    }
+    return{
+      status:HttpStatus.OK,
+      message:"Exito",
+      data:{
+        cantidadExp,
+        cantidadDetall,
+        cantidadOpt
+      }
+    }
+  }
 }

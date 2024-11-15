@@ -19,5 +19,6 @@ import { Admin } from "src/admin/entities/admin.entity";
   ],
   controllers: [VentasController],
   providers: [VentasService],
+  exports:[VentasService]
 })
 export class VentasModule { }

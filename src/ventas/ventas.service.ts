@@ -105,7 +105,7 @@ export class VentasService {
             idSession
         });
         const saveVenta = await this.ventaRepository.save(newVenta)
-        productos.forEach(async data => {
+        productos.forEach(async data => { 
             const foundProduct = await this.productRepository.findOne({
                 where: {
                     id: data.idProducto
