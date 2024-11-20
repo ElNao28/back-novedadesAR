@@ -10,8 +10,8 @@ export class Rating {
     detalles:number
     @Column()
     satOptimizacion:number
-    @Column({ type: 'date' })
-    fecha: Date | null;
+    @Column()
+    fecha: string;
 
     @ManyToOne(()=>User, user => user.calificaciones)
     usuario:User;
