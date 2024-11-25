@@ -577,8 +577,8 @@ export class ProductsService {
         payment_method_types: ['card'],
         line_items: items,
         mode: 'payment',
-        success_url: 'https://novedades-ar.netlify.app/#/full',
-        cancel_url: 'https://novedades-ar.netlify.app/#/inicio',
+        success_url: 'https://novedades-ar-proyecto.vercel.app/#/full',
+        cancel_url: 'https://novedades-ar-proyecto.vercel.app/#/inicio',
         expires_at: Math.floor(Date.now() / 1000) + 1800,
       })
       .then((session) => {
