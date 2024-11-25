@@ -144,6 +144,8 @@ export class VentasService {
             },
             relations: ['detallesVenta', 'detallesVenta.producto', 'usuario']
         });
+        if(!foundVenta) return
+
         const foundAdmin = await this.adminRepository.findOneBy({id:1});
         const newChat = await this.chatRepository.create()
         const saveChat = await this.chatRepository.save(newChat)
